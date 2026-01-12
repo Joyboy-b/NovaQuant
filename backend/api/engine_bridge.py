@@ -76,27 +76,33 @@ class EngineBridge:
         self.proc.stdin.write(payload)
         self.proc.stdin.flush()
 
-    def recv_all(self, timeout: Optional[float] = 2.0) -> List[Dict[str, Any]]:
-        """
-        Drain stdout queue for up to `timeout` seconds (best-effort).
-        Returns list of decoded JSON objects; ignores malformed lines.
-        """
-        messages: List[Dict[str, Any]] = []
-        deadline = time.time() + (timeout if timeout is not None else 10**9)
+    def recv_all(self, timeout: Optional[float] = 2.0) -> List[Dict]:
+        messages: List[Dict] = []
+        end = time.time() + (timeout or 0.0)
+        saw_any = False
 
-        while time.time() < deadline:
+        while True:
+            remaining = (end - time.time()) if timeout is not None else 0.1
+            if timeout is not None and remaining <= 0 and not saw_any:
+                break
+            if timeout is not None and remaining <= 0 and saw_any:
+                # we already saw some messages; stop
+                break
             try:
-                line = self._out_q.get(timeout=0.1)
+                line = self._out_q.get(timeout=min(0.1, max(0.01, remaining)) if timeout is not None else 0.1)
+                saw_any = True
+                try:
+                    messages.append(json.loads(line))
+                except json.JSONDecodeError:
+                    continue
             except queue.Empty:
-                continue
-
-            try:
-                messages.append(json.loads(line))
-            except json.JSONDecodeError:
-                # keep going; engine might emit logs
+                if saw_any:
+                    # queue went quiet after seeing some output → done
+                    break
                 continue
 
         return messages
+
 
     def stderr_drain(self, max_lines: int = 200) -> List[str]:
         """

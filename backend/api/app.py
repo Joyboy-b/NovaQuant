@@ -96,6 +96,23 @@ def _check_risks(order: Order) -> None:
             detail=f"Trading halted: drawdown {SESSION_STATE.drawdown_pct:.2f}%",
         )
 
+def _apply_engine_reports(reports: list[dict]) -> None:
+    for r in reports:
+        if r.get("type") == "fill":
+            sym = r.get("symbol", "")
+            px = float(r.get("px", 0))
+            SESSION_STATE.fills.append(r)
+            
+            PORTFOLIO.marks[sym] = px
+
+            PORTFOLIO.on_fill(
+                sym,
+                r.get("side", ""),
+                float(r.get("qty", 0)),
+                px,
+            )
+            SESSION_STATE.equity.append(PORTFOLIO.mark_to_market())
+
 
 @app.post("/execute_order")
 async def execute_order(order: Order):
@@ -107,14 +124,17 @@ async def execute_order(order: Order):
             detail=f"Engine unavailable. {ENGINE_ERROR or ''}".strip(),
         )
 
+    # Send order to engine
     bridge.send(order.model_dump())
+
+    # Read engine reports (ack/fill/etc)
     reports = bridge.recv_all(timeout=2.0)
 
-    # Demo-fill until you parse real engine reports
-    PORTFOLIO.on_fill(order.symbol, order.side.value, order.qty, order.px)
-    SESSION_STATE.equity.append(PORTFOLIO.mark_to_market())
+    # Apply fills to portfolio/equity based on engine "fill" reports
+    _apply_engine_reports(reports)
 
     return {"status": "submitted", "reports": reports}
+
 
 
 @app.get("/metrics", response_model=MetricsResponse)
@@ -156,3 +176,6 @@ def root():
 @app.get("/portfolio")
 def portfolio():
     return PORTFOLIO.snapshot()
+@app.get("/fills")
+def fills():
+    return SESSION_STATE.fills

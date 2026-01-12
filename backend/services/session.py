@@ -1,5 +1,5 @@
 # backend/services/session.py
-from typing import List
+from typing import List, Dict, Any
 from backend.config import SETTINGS
 
 
@@ -11,6 +11,7 @@ class SessionState:
         self.equity: List[float] = [1_000_000.0]
         self.last_pnl: float = 0.0
         self.halt_trading: bool = False
+        self.fills: List[Dict[str, Any]] = []
 
     @property
     def start_equity(self) -> float:

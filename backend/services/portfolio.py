@@ -31,10 +31,12 @@ class PortfolioState:
         return self.positions[symbol]
 
     def on_fill(self, symbol: str, side: str, qty: float, px: float):
+        if side == "BUY":
+            self.cash -= qty * px
+        else:  # SELL
+            self.cash += qty * px
         sign = 1.0 if side == "BUY" else -1.0
 
-        # BUY reduces cash, SELL increases cash
-        self.cash -= sign * qty * px
 
         pos = self._get_pos(symbol)
         new_qty = pos.qty + sign * qty
