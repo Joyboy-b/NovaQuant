@@ -1,6 +1,17 @@
-import type { Health, Metrics, Portfolio, Order } from "./types";
+import type {
+  Health,
+  Metrics,
+  Portfolio,
+  Order,
+  BacktestRequest,
+  BacktestResponse,
+  SweepRequest,
+  SweepResponse,
+  WalkForwardRequest,
+  WalkForwardResponse
+} from "./types";
 
-const API = import.meta.env.VITE_API_URL as string;
+const API = (import.meta.env.VITE_API_URL ?? "http://127.0.0.1:8000") as string;
 
 async function http<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API}${path}`, {
@@ -27,6 +38,26 @@ export const api = {
       method: "POST",
       body: JSON.stringify(order)
     }),
+
+  // NEW
+  runBacktest: (req: BacktestRequest) =>
+    http<BacktestResponse>("/backtest/run", {
+      method: "POST",
+      body: JSON.stringify(req)
+    }),
+
+  runSweep: (req: SweepRequest) =>
+    http<SweepResponse>("/backtest/sweep", {
+      method: "POST",
+      body: JSON.stringify(req)
+    }),
+
+  runWalkForward: (req: WalkForwardRequest) =>
+    http<WalkForwardResponse>("/backtest/walkforward", {
+      method: "POST",
+      body: JSON.stringify(req)
+    }),
+
   metricsWsUrl: () => {
     const url = new URL(API);
     url.protocol = url.protocol === "https:" ? "wss:" : "ws:";

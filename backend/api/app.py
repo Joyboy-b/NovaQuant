@@ -7,6 +7,7 @@ from typing import Optional
 from fastapi import FastAPI, WebSocket, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
+from backend.api.backtest_api import backtest_router
 from backend.config import SETTINGS
 from backend.models.order import Order
 from backend.models.metrics import MetricsResponse
@@ -17,10 +18,10 @@ from backend.api.engine_bridge import EngineBridge, default_engine_path
 from backend.data.binance_ws import run_bookticker_loop
 
 app = FastAPI(title=SETTINGS.name, version=SETTINGS.version)
-
+app.include_router(backtest_router, prefix="/backtest")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=SETTINGS.allowed_origins,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -152,8 +153,8 @@ async def ws_metrics(ws: WebSocket):
             m = get_metrics()
             await ws.send_json(m.model_dump())
             await asyncio.sleep(SETTINGS.metrics_ws_interval_sec)
-    except Exception:
-        pass
+    except Exception as e:
+        print("WS metrics closed:", repr(e))
 
 
 @app.get("/health")

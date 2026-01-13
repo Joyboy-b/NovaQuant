@@ -8,7 +8,7 @@ class Settings(BaseModel):
     name: str = "NovaQuant"
     version: str = "0.1.0"
 
-    allowed_origins: list[str] = ["http://localhost:3000", "http://localhost:5173"]
+    allowed_origins: list[str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
 
     # Trading / risk
     per_trade_notional_cap: float = 50_000.0
