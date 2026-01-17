@@ -51,7 +51,7 @@ It is designed to be:
 * **Python** → orchestration, safety, visibility
 * **C++** → execution & low-latency logic
 * **Explicit IPC** → no magic, easy debugging
-* **Engine is swappable** → stub today, real matcher tomorrow
+* **Engine is swappable** 
 
 ---
 
