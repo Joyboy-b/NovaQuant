@@ -7,7 +7,6 @@ It is designed to be:
 * clear
 * debuggable
 * extensible
-* portfolio-ready
 
 ---
 
