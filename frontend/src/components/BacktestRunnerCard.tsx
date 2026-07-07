@@ -27,6 +27,7 @@ export default function BacktestRunnerCard({ onBacktest, onSweep, onWalkForward 
   const [interval, setInterval] = useState("1d");
 
   // strategy/costs
+  const [strategy, setStrategy] = useState<BacktestRequest["strategy"]>("momentum");
   const [lookback, setLookback] = useState(10);
   const [qty, setQty] = useState(1);
   const [feeBps, setFeeBps] = useState(1);
@@ -51,6 +52,7 @@ export default function BacktestRunnerCard({ onBacktest, onSweep, onWalkForward 
     const common: BacktestRequest = {
       symbol,
       data_source: dataSource,
+      strategy,
       lookback,
       qty,
       fee_bps: feeBps,
@@ -88,7 +90,7 @@ export default function BacktestRunnerCard({ onBacktest, onSweep, onWalkForward 
       sigma,
       spread_bps: spreadBps
     };
-  }, [symbol, dataSource, steps, startPrice, mu, sigma, spreadBps, volBps, yahooSymbol, start, end, interval, lookback, qty, feeBps, slipBps, seed]);
+  }, [symbol, dataSource, steps, startPrice, mu, sigma, spreadBps, volBps, yahooSymbol, start, end, interval, strategy, lookback, qty, feeBps, slipBps, seed]);
 
   function parseNums(s: string) {
     return s
@@ -229,6 +231,14 @@ export default function BacktestRunnerCard({ onBacktest, onSweep, onWalkForward 
             )}
           </>
         )}
+
+        <label>
+          <div style={{ fontSize: 12, opacity: 0.75 }}>Strategy</div>
+          <select value={strategy} onChange={(e) => setStrategy(e.target.value as BacktestRequest["strategy"])} style={{ width: "100%", padding: 8 }}>
+            <option value="momentum">Momentum</option>
+            <option value="ml_momentum">ML momentum</option>
+          </select>
+        </label>
 
         <label>
           <div style={{ fontSize: 12, opacity: 0.75 }}>Lookback</div>

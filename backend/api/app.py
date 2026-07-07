@@ -7,6 +7,7 @@ from typing import Optional
 from fastapi import FastAPI, WebSocket, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
+from backend.brokers.alpaca import AlpacaBroker, AlpacaConfig
 from backend.api.backtest_api import backtest_router
 from backend.config import SETTINGS
 from backend.models.order import Order
@@ -17,11 +18,12 @@ from backend.services.metrics import compute_metrics
 from backend.api.engine_bridge import EngineBridge, default_engine_path
 from backend.data.binance_ws import run_bookticker_loop
 
+alpaca: AlpacaBroker | None = None
 app = FastAPI(title=SETTINGS.name, version=SETTINGS.version)
 app.include_router(backtest_router, prefix="/backtest")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=SETTINGS.allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -36,7 +38,7 @@ BINANCE_TASK: Optional[asyncio.Task] = None
 
 @app.on_event("startup")
 async def startup():
-    global bridge, ENGINE_ERROR, BINANCE_TASK
+    global bridge, ENGINE_ERROR, BINANCE_TASK, alpaca
 
     PORTFOLIO.reset()
     SESSION_STATE.reset()
@@ -58,11 +60,21 @@ async def startup():
                 on_tick=lambda mid, bid, ask: _on_market_tick(mid=mid, bid=bid, ask=ask),
             )
         )
+    if SETTINGS.alpaca_enabled:
+        alpaca = AlpacaBroker(
+            AlpacaConfig(
+                api_key=SETTINGS.alpaca_api_key,
+                secret_key=SETTINGS.alpaca_secret_key,
+                base_url=SETTINGS.alpaca_base_url,
+            )
+        )
+    else:
+        alpaca = None
 
 
 @app.on_event("shutdown")
 async def shutdown():
-    global BINANCE_TASK, bridge
+    global BINANCE_TASK, bridge, alpaca
 
     if BINANCE_TASK and not BINANCE_TASK.done():
         BINANCE_TASK.cancel()
@@ -74,6 +86,7 @@ async def shutdown():
     if bridge is not None:
         bridge.stop()
         bridge = None
+    alpaca = None
 
 
 def _on_market_tick(*, mid: float, bid: float, ask: float) -> None:
@@ -97,13 +110,14 @@ def _check_risks(order: Order) -> None:
             detail=f"Trading halted: drawdown {SESSION_STATE.drawdown_pct:.2f}%",
         )
 
+
 def _apply_engine_reports(reports: list[dict]) -> None:
     for r in reports:
         if r.get("type") == "fill":
             sym = r.get("symbol", "")
             px = float(r.get("px", 0))
             SESSION_STATE.fills.append(r)
-            
+
             PORTFOLIO.marks[sym] = px
 
             PORTFOLIO.on_fill(
@@ -118,7 +132,19 @@ def _apply_engine_reports(reports: list[dict]) -> None:
 @app.post("/execute_order")
 async def execute_order(order: Order):
     _check_risks(order)
+    if order.mode == "alpaca_paper":
+        if alpaca is None:
+            raise HTTPException(status_code=503, detail="Alpaca not configured (missing keys).")
 
+        out = alpaca.submit_limit_order(
+            order_id=order.order_id,
+            symbol=order.symbol,
+            side=order.side,
+            qty=order.qty,
+            limit_price=order.px,
+        )
+
+        return out
     if bridge is None or not bridge.is_alive():
         raise HTTPException(
             status_code=503,
@@ -135,7 +161,6 @@ async def execute_order(order: Order):
     _apply_engine_reports(reports)
 
     return {"status": "submitted", "reports": reports}
-
 
 
 @app.get("/metrics", response_model=MetricsResponse)
@@ -164,6 +189,8 @@ def health():
         "engine_alive": bool(bridge and bridge.is_alive()),
         "engine_error": ENGINE_ERROR,
     }
+
+
 @app.get("/")
 def root():
     return {
@@ -174,9 +201,13 @@ def root():
         "metrics": "/metrics",
         "ws_metrics": "/ws/metrics",
     }
+
+
 @app.get("/portfolio")
 def portfolio():
     return PORTFOLIO.snapshot()
+
+
 @app.get("/fills")
 def fills():
     return SESSION_STATE.fills

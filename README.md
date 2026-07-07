@@ -2,6 +2,8 @@
 
 **NovaQuant** is a modular quantitative trading platform that separates **strategy & orchestration (Python)** from **execution & performance-critical logic (C++)**, inspired by real-world professional trading systems.
 
+The project combines a FastAPI control plane, a React/TypeScript research dashboard, Python backtesting and simulation tooling, and a C++ execution stub that can be swapped for lower-latency order-routing logic.
+
 It is designed to be:
 
 * clear
@@ -62,10 +64,21 @@ It is designed to be:
 * Portfolio accounting (cash, positions, PnL)
 * Risk controls (notional caps, drawdown halts)
 * Live mark prices via Binance WebSocket
+* Strategy research lab:
+
+  * GBM and order-book synthetic data generation
+  * Yahoo Finance data loading
+  * Momentum and ML momentum strategies
+  * Walk-forward evaluation
+  * Parameter sweeps
+  * Bootstrap and permutation-test statistics
+
+* Optional broker adapter surface for paper trading integrations
 * Performance metrics:
 
   * Sharpe
   * Sortino
+  * Profit factor
   * Drawdown
   * Win rate
 * Web dashboard
@@ -156,6 +169,21 @@ npm run dev
 * **Dashboard:** [http://localhost:5173](http://localhost:5173)
 * **API Docs:** [http://localhost:8000/docs](http://localhost:8000/docs)
 * **Health:** [http://localhost:8000/health](http://localhost:8000/health)
+
+---
+
+## Environment Variables
+
+The backend runs without broker credentials by default. Optional configuration:
+
+| Variable | Purpose | Default |
+| --- | --- | --- |
+| `ALLOWED_ORIGINS` | Comma-separated frontend origins for CORS | `http://localhost:3000,http://localhost:5173` |
+| `BINANCE_SYMBOL` | Symbol used for live mark-price streaming | `BTCUSDT` |
+| `ALPACA_ENABLED` | Enables Alpaca paper order submission when truthy | disabled |
+| `ALPACA_API_KEY` | Alpaca API key | unset |
+| `ALPACA_SECRET_KEY` | Alpaca secret key | unset |
+| `ALPACA_BASE_URL` | Alpaca API base URL | `https://paper-api.alpaca.markets` |
 
 ---
 
@@ -252,7 +280,7 @@ It is intentionally designed to be **readable, inspectable, and extensible**, no
 ## Roadmap
 
 * Real order book & matching engine
-* Backtesting framework
+* Broader backtesting framework
 * Strategy plug-in system
 * Persistent trade storage
 * Latency & slippage models

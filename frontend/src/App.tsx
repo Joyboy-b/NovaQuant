@@ -3,7 +3,7 @@ import HealthCard from "./components/HealthCard";
 import PortfolioCard from "./components/PortfolioCard";
 import MetricsCard from "./components/MetricsCard";
 import OrderCard from "./components/OrderCard";
-import BacktestRunnerCard from "./components/BackTestRunnerCard";
+import BacktestRunnerCard from "./components/BacktestRunnerCard";
 import EquityCurveChart from "./components/EquityCurveChart";
 import SweepResultsTable from "./components/SweepResultsTable";
 import WalkForwardChunksVisual from "./components/WalkForwardChunksVisual";

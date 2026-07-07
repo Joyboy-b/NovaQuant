@@ -1,7 +1,7 @@
 # backend/models/order.py
 from enum import Enum
 from pydantic import BaseModel, Field
-from typing import Annotated
+from typing import Annotated, Literal
 
 
 class Side(str, Enum):
@@ -15,3 +15,5 @@ class Order(BaseModel):
     side: Side
     qty: Annotated[int, Field(gt=0)]
     px: Annotated[float, Field(gt=0)]
+
+    mode: Literal["engine", "alpaca_paper"] = "engine"

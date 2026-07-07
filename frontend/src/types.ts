@@ -36,6 +36,7 @@ export type Order = {
   side: Side;
   qty: number;
   px: number;
+  mode?: "engine" | "alpaca_paper";
 };
 
 export type BacktestRequest = {
@@ -59,7 +60,7 @@ export type BacktestRequest = {
   interval?: string;
 
   // strategy
-  strategy?: "momentum";
+  strategy?: "momentum" | "ml_momentum";
   lookback?: number;
   qty?: number;
 

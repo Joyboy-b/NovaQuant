@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from typing import Literal, Optional, List, Dict, Any
 
@@ -17,6 +17,20 @@ from backend.backtest.stats import bootstrap_mean_ci, permutation_test_mean_gt_z
 from backend.data.yahoo import load_yahoo
 
 backtest_router = APIRouter(tags=["backtest"])
+
+
+def _make_ml_momentum_strategy(symbol: str, qty: float):
+    try:
+        from backend.backtest.strategies.ml_momentum import MLMomentumStrategy
+    except ModuleNotFoundError as exc:
+        if exc.name == "sklearn":
+            raise HTTPException(
+                status_code=503,
+                detail="ML momentum requires scikit-learn. Install backend requirements to enable it.",
+            ) from exc
+        raise
+
+    return MLMomentumStrategy(symbol=symbol, qty=qty)
 
 
 class BacktestRequest(BaseModel):
@@ -42,7 +56,7 @@ class BacktestRequest(BaseModel):
     interval: str = Field(default="1d")
 
     # strategy params
-    strategy: Literal["momentum"] = "momentum"
+    strategy: Literal["momentum", "ml_momentum"] = "momentum"
     lookback: int = Field(default=10, ge=2, le=2000)
     qty: float = Field(default=1.0, gt=0)
 
@@ -95,8 +109,13 @@ def _make_quotes(req: BacktestRequest) -> List[Quote]:
 
 def _run_once(req: BacktestRequest) -> Dict[str, Any]:
     quotes = _make_quotes(req)
-
-    strat = MomentumStrategy(symbol=req.symbol, lookback=req.lookback, qty=req.qty)
+    if req.strategy == "ml_momentum":
+        strat = _make_ml_momentum_strategy(symbol=req.symbol, qty=req.qty)
+        # Fit on the first part of quotes (simple split for single backtest run)
+        split = max(50, int(len(quotes) * 0.6))
+        strat.fit(quotes[:split])
+    else:
+        strat = MomentumStrategy(symbol=req.symbol, lookback=req.lookback, qty=req.qty)
     cost = BpsCostModel(fee_bps=req.fee_bps, slippage_bps=req.slippage_bps)
 
     engine = BacktestEngine(symbol=req.symbol, strategy=strat, cost_model=cost)
@@ -131,26 +150,31 @@ def run_walkforward(req: WalkForwardRequest):
     quotes = _make_quotes(req)
 
     def factory(train_quotes: List[Quote]):
-        # simple "fit": choose lookback that maximizes momentum win-rate on train (cheap heuristic)
-        best_lb = req.lookback
-        best_score = -1.0
-        for lb in [5, 10, 20, 40, 80]:
-            strat = MomentumStrategy(symbol=req.symbol, lookback=lb, qty=req.qty)
-            cost = BpsCostModel(fee_bps=req.fee_bps, slippage_bps=req.slippage_bps)
-            eng = BacktestEngine(symbol=req.symbol, strategy=strat, cost_model=cost)
-            out = eng.run(train_quotes) or {}
-            eq = out.get("equity") or []
-            if len(eq) < 2:
-                score = -1.0
-            else:
-                pnls = [eq[i] - eq[i-1] for i in range(1, len(eq))]
-                wins = sum(1 for p in pnls if p > 0)
-                score = wins / (len(pnls) or 1)
+        if req.strategy == "ml_momentum":
+            s = _make_ml_momentum_strategy(symbol=req.symbol, qty=req.qty)
+            s.fit(train_quotes)
+            return s
+        else:
+            # simple "fit": choose lookback that maximizes momentum win-rate on train (cheap heuristic)
+            best_lb = req.lookback
+            best_score = -1.0
+            for lb in [5, 10, 20, 40, 80]:
+                strat = MomentumStrategy(symbol=req.symbol, lookback=lb, qty=req.qty)
+                cost = BpsCostModel(fee_bps=req.fee_bps, slippage_bps=req.slippage_bps)
+                eng = BacktestEngine(symbol=req.symbol, strategy=strat, cost_model=cost)
+                out = eng.run(train_quotes) or {}
+                eq = out.get("equity") or []
+                if len(eq) < 2:
+                    score = -1.0
+                else:
+                    pnls = [eq[i] - eq[i-1] for i in range(1, len(eq))]
+                    wins = sum(1 for p in pnls if p > 0)
+                    score = wins / (len(pnls) or 1)
 
-            if score > best_score:
-                best_score = score
-                best_lb = lb
-        return MomentumStrategy(symbol=req.symbol, lookback=best_lb, qty=req.qty)
+                if score > best_score:
+                    best_score = score
+                    best_lb = lb
+            return MomentumStrategy(symbol=req.symbol, lookback=best_lb, qty=req.qty)
 
     def runner(strategy, test_quotes: List[Quote]):
         cost = BpsCostModel(fee_bps=req.fee_bps, slippage_bps=req.slippage_bps)
