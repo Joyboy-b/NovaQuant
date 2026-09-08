@@ -11,7 +11,7 @@ import type {
   WalkForwardResponse
 } from "./types";
 
-const API = (import.meta.env.VITE_API_URL ?? "http://127.0.0.1:8000") as string;
+const API = (import.meta.env.VITE_API_URL ?? "http://127.0.0.1:8001") as string;
 
 async function http<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API}${path}`, {
@@ -30,6 +30,8 @@ async function http<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const api = {
+  getResearchRuns: () => http<{id:string;kind:string;created_at:string;config:BacktestRequest}[]>("/backtest/runs"),
+  getResearchRun: (id:string) => http<{kind:string;result:BacktestResponse | SweepResponse | WalkForwardResponse}>(`/backtest/runs/${id}`),
   getHealth: () => http<Health>("/health"),
   getMetrics: () => http<Metrics>("/metrics"),
   getPortfolio: () => http<Portfolio>("/portfolio"),

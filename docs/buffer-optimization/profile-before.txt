@@ -1,0 +1,14 @@
+         122800 function calls in 0.015 seconds
+
+   Ordered by: cumulative time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.004    0.004    0.024    0.024 /app/scripts/baselines/native_before_buffers.py:25(run_native)
+    60003    0.007    0.000    0.011    0.000 /app/scripts/baselines/native_before_buffers.py:28(<genexpr>)
+    60000    0.004    0.000    0.004    0.000 {built-in method builtins.getattr}
+     2789    0.000    0.000    0.000    0.000 {built-in method builtins.abs}
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+        5    0.000    0.000    0.000    0.000 /app/scripts/baselines/native_before_buffers.py:29(<genexpr>)
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.len}
+
+

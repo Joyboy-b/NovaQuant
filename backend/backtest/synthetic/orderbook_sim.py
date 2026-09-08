@@ -15,13 +15,12 @@ def orderbook_sim(
     """
     Microstructure-ish stream: mid random-walk + bid/ask from spread.
     """
-    if seed is not None:
-        random.seed(seed)
+    rng = random.Random(seed)
 
     mid = float(mid_start)
 
     for _ in range(steps):
-        shock = random.gauss(0.0, vol_bps / 10_000.0)
+        shock = rng.gauss(0.0, vol_bps / 10_000.0)
         mid *= (1.0 + shock)
 
         spread = mid * (spread_bps / 10_000.0)

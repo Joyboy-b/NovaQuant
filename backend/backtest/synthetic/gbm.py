@@ -12,12 +12,11 @@ def generate_gbm_prices(*, steps: int, start: float, mu: float, sigma: float, se
     mu: drift per step
     sigma: vol per step
     """
-    if seed is not None:
-        random.seed(seed)
+    rng = random.Random(seed)
 
     prices = [float(start)]
     for _ in range(steps - 1):
-        z = random.gauss(0.0, 1.0)
+        z = rng.gauss(0.0, 1.0)
         # log-return
         r = (mu - 0.5 * sigma * sigma) + sigma * z
         nxt = prices[-1] * math.exp(r)

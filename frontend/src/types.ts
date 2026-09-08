@@ -40,6 +40,8 @@ export type Order = {
 };
 
 export type BacktestRequest = {
+  engine?: "python" | "cpp";
+  dataset_id?: string;
   symbol: string;
 
   data_source: "gbm" | "orderbook" | "yahoo";
@@ -82,6 +84,10 @@ export type Trade = {
 };
 
 export type BacktestResponse = {
+  run_id?: string;
+  dataset_id?: string;
+  engine_version?: string;
+  elapsed_ms?: number;
   symbol: string;
   equity: number[];
   trades: Trade[];

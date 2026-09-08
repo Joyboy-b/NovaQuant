@@ -1,0 +1,342 @@
+{
+  "traceID": "bec31401d3adc46637706572cad82e3d",
+  "spans": [
+    {
+      "traceID": "bec31401d3adc46637706572cad82e3d",
+      "spanID": "59c960e69776a83b",
+      "operationName": "backtest.data",
+      "references": [
+        {
+          "refType": "CHILD_OF",
+          "traceID": "bec31401d3adc46637706572cad82e3d",
+          "spanID": "b0c1e448cf78f60b"
+        }
+      ],
+      "startTime": 1788899427219626,
+      "duration": 24004,
+      "tags": [
+        {
+          "key": "otel.scope.name",
+          "type": "string",
+          "value": "novaquant.research"
+        },
+        {
+          "key": "span.kind",
+          "type": "string",
+          "value": "internal"
+        }
+      ],
+      "logs": [],
+      "processID": "p1",
+      "warnings": null
+    },
+    {
+      "traceID": "bec31401d3adc46637706572cad82e3d",
+      "spanID": "88be7701068cf649",
+      "operationName": "backtest.engine",
+      "references": [
+        {
+          "refType": "CHILD_OF",
+          "traceID": "bec31401d3adc46637706572cad82e3d",
+          "spanID": "b0c1e448cf78f60b"
+        }
+      ],
+      "startTime": 1788899427243732,
+      "duration": 5611,
+      "tags": [
+        {
+          "key": "otel.scope.name",
+          "type": "string",
+          "value": "novaquant.research"
+        },
+        {
+          "key": "engine",
+          "type": "string",
+          "value": "cpp"
+        },
+        {
+          "key": "quotes",
+          "type": "int64",
+          "value": 20000
+        },
+        {
+          "key": "span.kind",
+          "type": "string",
+          "value": "internal"
+        }
+      ],
+      "logs": [],
+      "processID": "p1",
+      "warnings": null
+    },
+    {
+      "traceID": "bec31401d3adc46637706572cad82e3d",
+      "spanID": "76644136468624b7",
+      "operationName": "backtest.metrics",
+      "references": [
+        {
+          "refType": "CHILD_OF",
+          "traceID": "bec31401d3adc46637706572cad82e3d",
+          "spanID": "b0c1e448cf78f60b"
+        }
+      ],
+      "startTime": 1788899427249396,
+      "duration": 17050,
+      "tags": [
+        {
+          "key": "otel.scope.name",
+          "type": "string",
+          "value": "novaquant.research"
+        },
+        {
+          "key": "span.kind",
+          "type": "string",
+          "value": "internal"
+        }
+      ],
+      "logs": [],
+      "processID": "p1",
+      "warnings": null
+    },
+    {
+      "traceID": "bec31401d3adc46637706572cad82e3d",
+      "spanID": "f7d2b2449f58aff6",
+      "operationName": "backtest.bootstrap",
+      "references": [
+        {
+          "refType": "CHILD_OF",
+          "traceID": "bec31401d3adc46637706572cad82e3d",
+          "spanID": "b0c1e448cf78f60b"
+        }
+      ],
+      "startTime": 1788899427266503,
+      "duration": 264462,
+      "tags": [
+        {
+          "key": "otel.scope.name",
+          "type": "string",
+          "value": "novaquant.research"
+        },
+        {
+          "key": "span.kind",
+          "type": "string",
+          "value": "internal"
+        }
+      ],
+      "logs": [],
+      "processID": "p1",
+      "warnings": null
+    },
+    {
+      "traceID": "bec31401d3adc46637706572cad82e3d",
+      "spanID": "9e1d8100c3c697f5",
+      "operationName": "backtest.permutation",
+      "references": [
+        {
+          "refType": "CHILD_OF",
+          "traceID": "bec31401d3adc46637706572cad82e3d",
+          "spanID": "b0c1e448cf78f60b"
+        }
+      ],
+      "startTime": 1788899427531042,
+      "duration": 637374,
+      "tags": [
+        {
+          "key": "otel.scope.name",
+          "type": "string",
+          "value": "novaquant.research"
+        },
+        {
+          "key": "span.kind",
+          "type": "string",
+          "value": "internal"
+        }
+      ],
+      "logs": [],
+      "processID": "p1",
+      "warnings": null
+    },
+    {
+      "traceID": "bec31401d3adc46637706572cad82e3d",
+      "spanID": "130a375588408212",
+      "operationName": "research.transaction",
+      "references": [
+        {
+          "refType": "CHILD_OF",
+          "traceID": "bec31401d3adc46637706572cad82e3d",
+          "spanID": "ccde54f7b0b3a76e"
+        }
+      ],
+      "startTime": 1788899428231958,
+      "duration": 85506,
+      "tags": [
+        {
+          "key": "otel.scope.name",
+          "type": "string",
+          "value": "novaquant.research"
+        },
+        {
+          "key": "span.kind",
+          "type": "string",
+          "value": "internal"
+        }
+      ],
+      "logs": [],
+      "processID": "p1",
+      "warnings": null
+    },
+    {
+      "traceID": "bec31401d3adc46637706572cad82e3d",
+      "spanID": "ccde54f7b0b3a76e",
+      "operationName": "research.persist",
+      "references": [
+        {
+          "refType": "CHILD_OF",
+          "traceID": "bec31401d3adc46637706572cad82e3d",
+          "spanID": "b0c1e448cf78f60b"
+        }
+      ],
+      "startTime": 1788899428168753,
+      "duration": 149365,
+      "tags": [
+        {
+          "key": "otel.scope.name",
+          "type": "string",
+          "value": "novaquant.research"
+        },
+        {
+          "key": "span.kind",
+          "type": "string",
+          "value": "internal"
+        }
+      ],
+      "logs": [],
+      "processID": "p1",
+      "warnings": null
+    },
+    {
+      "traceID": "bec31401d3adc46637706572cad82e3d",
+      "spanID": "b0c1e448cf78f60b",
+      "operationName": "POST /backtest/run",
+      "references": [
+        {
+          "refType": "CHILD_OF",
+          "traceID": "bec31401d3adc46637706572cad82e3d",
+          "spanID": "c08ca8573bf75a83"
+        }
+      ],
+      "startTime": 1788899427219222,
+      "duration": 1119651,
+      "tags": [
+        {
+          "key": "otel.scope.name",
+          "type": "string",
+          "value": "opentelemetry.instrumentation.fastapi"
+        },
+        {
+          "key": "otel.scope.version",
+          "type": "string",
+          "value": "0.60b1"
+        },
+        {
+          "key": "http.flavor",
+          "type": "string",
+          "value": "1.1"
+        },
+        {
+          "key": "http.host",
+          "type": "string",
+          "value": "172.21.0.6:8001"
+        },
+        {
+          "key": "http.method",
+          "type": "string",
+          "value": "POST"
+        },
+        {
+          "key": "http.route",
+          "type": "string",
+          "value": "/backtest/run"
+        },
+        {
+          "key": "http.scheme",
+          "type": "string",
+          "value": "http"
+        },
+        {
+          "key": "http.server_name",
+          "type": "string",
+          "value": "127.0.0.1:8003"
+        },
+        {
+          "key": "http.status_code",
+          "type": "int64",
+          "value": 200
+        },
+        {
+          "key": "http.target",
+          "type": "string",
+          "value": "/backtest/run"
+        },
+        {
+          "key": "http.url",
+          "type": "string",
+          "value": "http://127.0.0.1:8003/backtest/run"
+        },
+        {
+          "key": "http.user_agent",
+          "type": "string",
+          "value": "Python-urllib/3.12"
+        },
+        {
+          "key": "net.host.port",
+          "type": "int64",
+          "value": 8001
+        },
+        {
+          "key": "net.peer.ip",
+          "type": "string",
+          "value": "172.21.0.1"
+        },
+        {
+          "key": "net.peer.port",
+          "type": "int64",
+          "value": 54282
+        },
+        {
+          "key": "span.kind",
+          "type": "string",
+          "value": "server"
+        }
+      ],
+      "logs": [],
+      "processID": "p1",
+      "warnings": [
+        "parent span ID=c08ca8573bf75a83 is not in the trace; skipping clock skew adjustment"
+      ]
+    }
+  ],
+  "processes": {
+    "p1": {
+      "serviceName": "novaquant-after",
+      "tags": [
+        {
+          "key": "telemetry.sdk.language",
+          "type": "string",
+          "value": "python"
+        },
+        {
+          "key": "telemetry.sdk.name",
+          "type": "string",
+          "value": "opentelemetry"
+        },
+        {
+          "key": "telemetry.sdk.version",
+          "type": "string",
+          "value": "1.39.1"
+        }
+      ]
+    }
+  },
+  "warnings": null
+}

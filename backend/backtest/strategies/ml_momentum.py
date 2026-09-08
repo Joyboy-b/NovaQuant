@@ -35,7 +35,7 @@ class MLMomentumStrategy:
             return
 
         X, y = self._make_dataset(quotes)
-        if len(y) < 10:
+        if len(y) < 10 or len(np.unique(y)) < 2:
             self.model = None
             self.is_fit = False
             return
@@ -65,18 +65,20 @@ class MLMomentumStrategy:
     # ---------- internals ----------
 
     def _features_at(self, idx: int, quotes: List[Quote]) -> np.ndarray:
-        mids = np.array([q.mid for q in quotes], dtype=float)
+        start = max(0, idx - max(self.lookbacks + [self.vol_window]))
+        mids = np.array([q.mid for q in quotes[start:idx+1]], dtype=float)
+        local_idx = idx - start
 
         feats = []
 
         # multi-horizon returns
         for lb in self.lookbacks:
-            r = _safe_log(mids[idx]) - _safe_log(mids[idx - lb])
+            r = _safe_log(mids[local_idx]) - _safe_log(mids[local_idx - lb])
             feats.append(r)
 
         # rolling mean return + volatility
         w = self.vol_window
-        rets = np.diff(np.log(np.clip(mids[idx - w : idx + 1], 1e-12, None)))
+        rets = np.diff(np.log(np.clip(mids[local_idx - w : local_idx + 1], 1e-12, None)))
         feats.append(float(np.mean(rets)))
         feats.append(float(np.std(rets) + 1e-12))
 

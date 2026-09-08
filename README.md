@@ -1,4 +1,6 @@
-﻿# NovaQuant Trading Platform
+﻿Current backend setup, persistence, C++ benchmarks, and limitations: [Backend upgrade guide](docs/BACKEND_UPGRADE.md). Start the local API and PostgreSQL with `docker compose up -d --build`.
+
+# NovaQuant Trading Platform
 
 **NovaQuant** is a modular quantitative trading platform that separates **strategy & orchestration (Python)** from **execution & performance-critical logic (C++)**, inspired by real-world professional trading systems.
 
@@ -150,7 +152,7 @@ build-engine\novaquant_engine.exe
 ### 5️⃣ Start backend
 
 ```powershell
-python -m uvicorn backend.api.app:app --reload --port 8000
+python -m uvicorn backend.api.app:app --reload --port 8001
 ```
 
 ---
@@ -167,8 +169,8 @@ npm run dev
 ## URLs
 
 * **Dashboard:** [http://localhost:5173](http://localhost:5173)
-* **API Docs:** [http://localhost:8000/docs](http://localhost:8000/docs)
-* **Health:** [http://localhost:8000/health](http://localhost:8000/health)
+* **API Docs:** [http://localhost:8001/docs](http://localhost:8001/docs)
+* **Health:** [http://localhost:8001/health](http://localhost:8001/health)
 
 ---
 
@@ -197,7 +199,7 @@ cmake -S engine-cpp -B build-engine -G Ninja -DCMAKE_BUILD_TYPE=Release
 cmake --build build-engine --parallel
 
 Write-Host "Starting backend..."
-python -m uvicorn backend.api.app:app --reload --port 8000
+python -m uvicorn backend.api.app:app --reload --port 8001
 ```
 
 Run:
@@ -310,3 +312,11 @@ Committed:
 MIT
 
 ---
+
+
+
+Measured performance, reproduction commands, correctness checks and tradeoffs: [benchmark report](docs/PERFORMANCE.md).
+
+Host-native Windows benchmarks using pyperf: [setup, results and stability notes](docs/PYPERF_NATIVE.md).
+
+Run benchmarks and inspect API traces yourself: [pyperf and OpenTelemetry guide](docs/TESTING_GUIDE.md).

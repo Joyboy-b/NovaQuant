@@ -1,7 +1,9 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, HTTPException, Query
+from pydantic import BaseModel, Field, ConfigDict, model_validator
+from uuid import UUID
+from time import perf_counter
 from typing import Literal, Optional, List, Dict, Any
 
 from backend.services.metrics import compute_metrics
@@ -15,6 +17,9 @@ from backend.backtest.walkforward import walk_forward
 from backend.backtest.sweeps import grid_sweep
 from backend.backtest.stats import bootstrap_mean_ci, permutation_test_mean_gt_zero
 from backend.data.yahoo import load_yahoo
+from backend.services.research_store import get_research_store
+from backend.backtest.native import run_native
+from backend.services.telemetry import span, traced
 
 backtest_router = APIRouter(tags=["backtest"])
 
@@ -34,6 +39,9 @@ def _make_ml_momentum_strategy(symbol: str, qty: float):
 
 
 class BacktestRequest(BaseModel):
+    model_config = ConfigDict(allow_inf_nan=False)
+    engine: Literal['python','cpp'] = 'python'
+    dataset_id: Optional[str] = Field(default=None, pattern=r'^[0-9a-f]{64}$')
     symbol: str = Field(default="BTCUSDT", min_length=1)
 
     data_source: Literal["gbm", "orderbook", "yahoo"] = "gbm"
@@ -45,7 +53,7 @@ class BacktestRequest(BaseModel):
     # synthetic params
     start_price: float = Field(default=30000.0, gt=0)
     mu: float = Field(default=0.0)
-    sigma: float = Field(default=0.02)
+    sigma: float = Field(default=0.02, ge=0, le=0.1)
     spread_bps: float = Field(default=5.0, ge=0)
     vol_bps: float = Field(default=10.0, ge=0)  # orderbook sim volatility
 
@@ -62,10 +70,21 @@ class BacktestRequest(BaseModel):
 
     # costs
     fee_bps: float = Field(default=1.0, ge=0)
-    slippage_bps: float = Field(default=2.0, ge=0)
+    slippage_bps: float = Field(default=2.0, ge=0, lt=10000)
+
+    @model_validator(mode='after')
+    def supported_engine(self):
+        if self.engine == 'cpp' and self.strategy != 'momentum':
+            raise ValueError('C++ currently supports momentum only')
+        return self
 
 
 class BacktestResponse(BaseModel):
+    run_id: str
+    dataset_id: str
+    engine_version: str
+    elapsed_ms: float
+    evaluation: Dict[str, Any]
     symbol: str
     equity: List[float]
     trades: List[Dict[str, Any]]
@@ -73,7 +92,13 @@ class BacktestResponse(BaseModel):
     stats: Dict[str, Any]
 
 
+@traced('backtest.data')
 def _make_quotes(req: BacktestRequest) -> List[Quote]:
+    if req.dataset_id:
+        stored = get_research_store().dataset(req.dataset_id)
+        if stored is None:
+            raise HTTPException(404, 'Dataset not found')
+        return [Quote(**q) for q in stored['quotes']]
     if req.data_source == "gbm":
         prices = generate_gbm_prices(
             steps=req.steps,
@@ -107,37 +132,73 @@ def _make_quotes(req: BacktestRequest) -> List[Quote]:
     raise ValueError("Unknown data_source")
 
 
-def _run_once(req: BacktestRequest) -> Dict[str, Any]:
-    quotes = _make_quotes(req)
+def _run_once(req: BacktestRequest, quotes=None) -> Dict[str, Any]:
+    quotes = _make_quotes(req) if quotes is None else quotes
+    split = 0
     if req.strategy == "ml_momentum":
         strat = _make_ml_momentum_strategy(symbol=req.symbol, qty=req.qty)
         # Fit on the first part of quotes (simple split for single backtest run)
-        split = max(50, int(len(quotes) * 0.6))
+        if len(quotes) < 60:
+            raise HTTPException(422, 'ML evaluation requires at least 60 quotes')
+        split = min(len(quotes)-1, max(30, int(len(quotes) * 0.6)))
         strat.fit(quotes[:split])
     else:
         strat = MomentumStrategy(symbol=req.symbol, lookback=req.lookback, qty=req.qty)
     cost = BpsCostModel(fee_bps=req.fee_bps, slippage_bps=req.slippage_bps)
 
     engine = BacktestEngine(symbol=req.symbol, strategy=strat, cost_model=cost)
-    out = engine.run(quotes)
+    with span('backtest.engine', engine=req.engine, quotes=len(quotes)):
+        if req.engine == 'cpp':
+            out = run_native(quotes,req.symbol,req.lookback,req.qty,req.fee_bps,req.slippage_bps)
+        else:
+            out = engine.run(quotes, start_index=split)
 
-    equity = out["equity"]
-    trade_pnls = [equity[i] - equity[i - 1] for i in range(1, len(equity))]
-    metrics = compute_metrics(equity, trade_pnls).model_dump()
+    with span('backtest.metrics'):
+        equity = out["equity"]
+        trade_pnls = [equity[i] - equity[i - 1] for i in range(1, len(equity))]
+        metrics = compute_metrics(equity, trade_pnls).model_dump()
 
     # stats on trade_pnls (simple but useful)
-    stats = {
-        "bootstrap_pnl_mean_ci": bootstrap_mean_ci(trade_pnls, seed=req.seed),
-        "perm_test_mean_gt_zero": permutation_test_mean_gt_zero(trade_pnls, seed=req.seed),
-    }
+    with span('backtest.bootstrap'):
+        bootstrap = bootstrap_mean_ci(trade_pnls, seed=req.seed)
+    with span('backtest.permutation'):
+        permutation = permutation_test_mean_gt_zero(trade_pnls, seed=req.seed)
+    stats = {"bootstrap_pnl_mean_ci": bootstrap, "perm_test_mean_gt_zero": permutation}
 
-    return {"equity": equity, "trades": out["trades"], "metrics": metrics, "stats": stats}
+    return {"equity": equity, "trades": out["trades"], "metrics": metrics, "stats": stats,
+            'evaluation':{'training_quotes':split,'evaluation_quotes':len(quotes)-split,
+                          'start_index':split,'engine':req.engine}}
 
 
 @backtest_router.post("/run", response_model=BacktestResponse)
 def run_backtest(req: BacktestRequest) -> BacktestResponse:
-    out = _run_once(req)
-    return BacktestResponse(symbol=req.symbol, **out)
+    start = perf_counter()
+    quotes = _make_quotes(req)
+    out = _run_once(req, quotes)
+    saved = get_research_store().save('backtest',req.model_dump(),quotes,
+        {'symbol':req.symbol,**out},(perf_counter()-start)*1000)
+    return BacktestResponse(**saved)
+
+
+@backtest_router.get('/runs')
+def list_runs(limit: int=Query(50,ge=1,le=200), offset: int=Query(0,ge=0)):
+    return get_research_store().list(limit,offset)
+
+
+@backtest_router.get('/runs/{run_id}')
+def get_run(run_id: UUID):
+    result = get_research_store().get(run_id)
+    if result is None:
+        raise HTTPException(404,'Research run not found')
+    return result
+
+
+@backtest_router.get('/datasets/{dataset_id}')
+def get_dataset(dataset_id: str):
+    result = get_research_store().dataset(dataset_id)
+    if result is None:
+        raise HTTPException(404,'Dataset not found')
+    return result
 
 
 class WalkForwardRequest(BacktestRequest):
@@ -147,6 +208,9 @@ class WalkForwardRequest(BacktestRequest):
 
 @backtest_router.post("/walkforward")
 def run_walkforward(req: WalkForwardRequest):
+    if req.engine == 'cpp':
+        raise HTTPException(422, 'C++ walk-forward is not supported yet; use engine=python')
+    start = perf_counter()
     quotes = _make_quotes(req)
 
     def factory(train_quotes: List[Quote]):
@@ -200,7 +264,8 @@ def run_walkforward(req: WalkForwardRequest):
         m = compute_metrics(eq, pnls).model_dump()
         chunk_metrics.append({"start": c["start"], "end": c["end"], "metrics": m})
 
-    return {"chunks": chunks, "chunk_metrics": chunk_metrics}
+    return get_research_store().save('walkforward',req.model_dump(),quotes,
+        {"chunks": chunks, "chunk_metrics": chunk_metrics},(perf_counter()-start)*1000)
 
 
 
@@ -214,6 +279,10 @@ class SweepRequest(BacktestRequest):
 
 @backtest_router.post("/sweep")
 def run_sweep(req: SweepRequest):
+    start = perf_counter()
+    if not req.lookbacks or not req.fee_bps_list or not req.slippage_bps_list or len(req.lookbacks)*len(req.fee_bps_list)*len(req.slippage_bps_list)>200:
+        raise HTTPException(422,'Sweep must contain between 1 and 200 combinations')
+    quotes = _make_quotes(req)
     base = req.model_dump()
 
     grid = {
@@ -224,7 +293,7 @@ def run_sweep(req: SweepRequest):
 
     def runner(p: Dict[str, Any]) -> Dict[str, Any]:
         r = BacktestRequest(**{**base, **p})
-        out = _run_once(r)
+        out = _run_once(r, quotes)
         return out
 
     top = grid_sweep(param_grid=grid, runner=runner, score_key=req.score_key, top_k=req.top_k)
@@ -239,4 +308,5 @@ def run_sweep(req: SweepRequest):
         }
         for t in top
     ]
-    return {"top": compact}
+    return get_research_store().save('sweep',req.model_dump(),quotes,
+        {"top": compact, 'top_details':top},(perf_counter()-start)*1000)

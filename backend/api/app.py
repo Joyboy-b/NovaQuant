@@ -15,12 +15,22 @@ from backend.models.metrics import MetricsResponse
 from backend.services.portfolio import PORTFOLIO
 from backend.services.session import SESSION_STATE
 from backend.services.metrics import compute_metrics
-from backend.api.engine_bridge import EngineBridge, default_engine_path
+from backend.api.async_engine_bridge import EngineBridge, default_engine_path
+from backend.services.research_store import get_research_store, close_research_store
+from backend.services.telemetry import configure_telemetry, shutdown_telemetry
+import psycopg
+from fastapi.responses import JSONResponse
 from backend.data.binance_ws import run_bookticker_loop
 
 alpaca: AlpacaBroker | None = None
 app = FastAPI(title=SETTINGS.name, version=SETTINGS.version)
 app.include_router(backtest_router, prefix="/backtest")
+configure_telemetry(app)
+
+
+@app.exception_handler(psycopg.Error)
+async def database_error(request, exc):
+    return JSONResponse(status_code=503, content={'detail':'Research database unavailable'})
 app.add_middleware(
     CORSMiddleware,
     allow_origins=SETTINGS.allowed_origins,
@@ -42,22 +52,24 @@ async def startup():
 
     PORTFOLIO.reset()
     SESSION_STATE.reset()
+    await asyncio.to_thread(get_research_store)
 
     # Start engine if present; otherwise keep API alive
     try:
-        bridge = EngineBridge(default_engine_path())
-        bridge.start()
+        bridge = EngineBridge(default_engine_path(), on_fill=_apply_engine_reports)
+        await bridge.start()
         ENGINE_ERROR = None
     except Exception as e:
         bridge = None
         ENGINE_ERROR = f"{type(e).__name__}: {e}"
 
     # Start Binance streaming marks
-    if BINANCE_TASK is None or BINANCE_TASK.done():
+    import os
+    if os.getenv('MARKET_STREAM_ENABLED','true').lower() == 'true' and (BINANCE_TASK is None or BINANCE_TASK.done()):
         BINANCE_TASK = asyncio.create_task(
             run_bookticker_loop(
                 SETTINGS.binance_symbol,
-                on_tick=lambda mid, bid, ask: _on_market_tick(mid=mid, bid=bid, ask=ask),
+                on_tick=_on_market_tick,
             )
         )
     if SETTINGS.alpaca_enabled:
@@ -84,12 +96,14 @@ async def shutdown():
             pass
 
     if bridge is not None:
-        bridge.stop()
+        await bridge.stop()
         bridge = None
     alpaca = None
+    await asyncio.to_thread(close_research_store)
+    await asyncio.to_thread(shutdown_telemetry, app)
 
 
-def _on_market_tick(*, mid: float, bid: float, ask: float) -> None:
+def _on_market_tick(mid: float, bid: float, ask: float) -> None:
     PORTFOLIO.marks[SETTINGS.binance_symbol] = mid
     SESSION_STATE.equity.append(PORTFOLIO.mark_to_market())
 
@@ -136,7 +150,7 @@ async def execute_order(order: Order):
         if alpaca is None:
             raise HTTPException(status_code=503, detail="Alpaca not configured (missing keys).")
 
-        out = alpaca.submit_limit_order(
+        out = await asyncio.to_thread(alpaca.submit_limit_order,
             order_id=order.order_id,
             symbol=order.symbol,
             side=order.side,
@@ -151,14 +165,14 @@ async def execute_order(order: Order):
             detail=f"Engine unavailable. {ENGINE_ERROR or ''}".strip(),
         )
 
-    # Send order to engine
-    bridge.send(order.model_dump())
-
-    # Read engine reports (ack/fill/etc)
-    reports = bridge.recv_all(timeout=2.0)
-
-    # Apply fills to portfolio/equity based on engine "fill" reports
-    _apply_engine_reports(reports)
+    try:
+        reports = await bridge.execute(order.model_dump(mode='json'), timeout=2.0)
+    except TimeoutError:
+        raise HTTPException(504, 'Engine response timed out; execution outcome may still arrive')
+    except ValueError as exc:
+        raise HTTPException(409, str(exc))
+    except (ConnectionError, BrokenPipeError):
+        raise HTTPException(503, 'Engine connection unavailable')
 
     return {"status": "submitted", "reports": reports}
 

@@ -31,5 +31,6 @@ def grid_sweep(
 
     rec(0, {})
     # sort None to bottom
-    results.sort(key=lambda r: (r["score"] is None, -(r["score"] or -1e18)))
+    results.sort(key=lambda r: (r['score'] is None,
+        (r['score'] if score_key == 'max_drawdown_pct' else -r['score']) if r['score'] is not None else 0))
     return results[:top_k]

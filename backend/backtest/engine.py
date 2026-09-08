@@ -7,6 +7,7 @@ from backend.backtest.data import Quote
 
 
 class BacktestEngine:
+    fees_in_equity = True
     def __init__(self, symbol: str, strategy, cost_model):
         self.symbol = symbol
         self.strategy = strategy
@@ -15,10 +16,12 @@ class BacktestEngine:
         self.portfolio.reset()
         self.trades: List[Dict[str, Any]] = []
 
-    def run(self, quotes: List[Quote]) -> Dict[str, Any]:
+    def run(self, quotes: List[Quote], *, start_index: int = 0) -> Dict[str, Any]:
         equity: List[float] = []
 
         for j, q in enumerate(quotes):
+            if j < start_index:
+                continue
             # mark
             self.portfolio.marks[self.symbol] = q.mid
 
@@ -38,6 +41,7 @@ class BacktestEngine:
                 )
 
                 self.portfolio.on_fill(self.symbol, side, qty, fill_px)
+                self.portfolio.cash -= fee
 
                 self.trades.append(
                     {

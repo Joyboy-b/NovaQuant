@@ -1,0 +1,36 @@
+name: novaquant
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: novaquant
+      POSTGRES_PASSWORD: novaquant
+      POSTGRES_DB: novaquant
+    ports: ["127.0.0.1:55433:5432"]
+    volumes: ["research_data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL","pg_isready -U novaquant"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  api:
+    build: .
+    environment:
+      DATABASE_URL: postgresql://novaquant:novaquant@db:5432/novaquant
+      MARKET_STREAM_ENABLED: "false"
+    ports: ["127.0.0.1:8001:8001"]
+    depends_on:
+      db:
+        condition: service_healthy
+  test:
+    build: .
+    profiles: ["test"]
+    environment:
+      TEST_DATABASE_URL: postgresql://novaquant:novaquant@db:5432/novaquant
+      MARKET_STREAM_ENABLED: "false"
+    command: ["python","-m","pytest","-q","-p","no:cacheprovider"]
+    depends_on:
+      db:
+        condition: service_healthy
+volumes:
+  research_data:

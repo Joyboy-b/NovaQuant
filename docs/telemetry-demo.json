@@ -1,0 +1,215 @@
+{
+  "note": "Two traced diagnostic requests, not a statistically controlled speed benchmark. Parent spans include child time; do not add them together.",
+  "requests": [
+    {
+      "engine": "python",
+      "steps": 1000,
+      "run_id": "f798121a-b0fd-46d3-be01-190a35b19099",
+      "trace_id": "6cd0d7c5365bd9e4a40ddab1a3fed4bb",
+      "client_response_ms": 93.32640000138781,
+      "spans": [
+        {
+          "name": "POST /backtest/run",
+          "duration_ms": 71.931,
+          "span_id": "64b18ccd5a0b8e9a",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "6cd0d7c5365bd9e4a40ddab1a3fed4bb",
+              "spanID": "af2df71ef0ae65f9"
+            }
+          ]
+        },
+        {
+          "name": "backtest.data",
+          "duration_ms": 1.531,
+          "span_id": "a1cfd7427fc4d840",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "6cd0d7c5365bd9e4a40ddab1a3fed4bb",
+              "spanID": "64b18ccd5a0b8e9a"
+            }
+          ]
+        },
+        {
+          "name": "backtest.engine",
+          "duration_ms": 1.198,
+          "span_id": "67b5304ec019286a",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "6cd0d7c5365bd9e4a40ddab1a3fed4bb",
+              "spanID": "64b18ccd5a0b8e9a"
+            }
+          ]
+        },
+        {
+          "name": "backtest.metrics",
+          "duration_ms": 1.287,
+          "span_id": "40d9962a1480ade1",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "6cd0d7c5365bd9e4a40ddab1a3fed4bb",
+              "spanID": "64b18ccd5a0b8e9a"
+            }
+          ]
+        },
+        {
+          "name": "backtest.bootstrap",
+          "duration_ms": 7.411,
+          "span_id": "2d5a8726f2e73818",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "6cd0d7c5365bd9e4a40ddab1a3fed4bb",
+              "spanID": "64b18ccd5a0b8e9a"
+            }
+          ]
+        },
+        {
+          "name": "backtest.permutation",
+          "duration_ms": 23.501,
+          "span_id": "c8d4d118216a1cb8",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "6cd0d7c5365bd9e4a40ddab1a3fed4bb",
+              "spanID": "64b18ccd5a0b8e9a"
+            }
+          ]
+        },
+        {
+          "name": "research.persist",
+          "duration_ms": 21.883,
+          "span_id": "92d27b4852ae0632",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "6cd0d7c5365bd9e4a40ddab1a3fed4bb",
+              "spanID": "64b18ccd5a0b8e9a"
+            }
+          ]
+        },
+        {
+          "name": "research.transaction",
+          "duration_ms": 16.41,
+          "span_id": "169da7071abdba70",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "6cd0d7c5365bd9e4a40ddab1a3fed4bb",
+              "spanID": "92d27b4852ae0632"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "engine": "cpp",
+      "steps": 1000,
+      "run_id": "a48a4750-da46-454c-969c-69ec1675d85b",
+      "trace_id": "e821de79f2b7da1d3b310db47e290aa5",
+      "client_response_ms": 57.92279999877792,
+      "spans": [
+        {
+          "name": "POST /backtest/run",
+          "duration_ms": 45.511,
+          "span_id": "364dd592c910f003",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "e821de79f2b7da1d3b310db47e290aa5",
+              "spanID": "037d871d9c785a9a"
+            }
+          ]
+        },
+        {
+          "name": "backtest.data",
+          "duration_ms": 1.257,
+          "span_id": "df4222e786d33dec",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "e821de79f2b7da1d3b310db47e290aa5",
+              "spanID": "364dd592c910f003"
+            }
+          ]
+        },
+        {
+          "name": "backtest.engine",
+          "duration_ms": 0.711,
+          "span_id": "89b8f895ec763427",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "e821de79f2b7da1d3b310db47e290aa5",
+              "spanID": "364dd592c910f003"
+            }
+          ]
+        },
+        {
+          "name": "backtest.metrics",
+          "duration_ms": 1.086,
+          "span_id": "a92e7b2f3d59fff9",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "e821de79f2b7da1d3b310db47e290aa5",
+              "spanID": "364dd592c910f003"
+            }
+          ]
+        },
+        {
+          "name": "backtest.bootstrap",
+          "duration_ms": 6.481,
+          "span_id": "2f93bf32b01ff59c",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "e821de79f2b7da1d3b310db47e290aa5",
+              "spanID": "364dd592c910f003"
+            }
+          ]
+        },
+        {
+          "name": "backtest.permutation",
+          "duration_ms": 21.145,
+          "span_id": "41b21a3c2daf15f8",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "e821de79f2b7da1d3b310db47e290aa5",
+              "spanID": "364dd592c910f003"
+            }
+          ]
+        },
+        {
+          "name": "research.persist",
+          "duration_ms": 12.174,
+          "span_id": "7aa056726840cc17",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "e821de79f2b7da1d3b310db47e290aa5",
+              "spanID": "364dd592c910f003"
+            }
+          ]
+        },
+        {
+          "name": "research.transaction",
+          "duration_ms": 7.82,
+          "span_id": "37ba39ca93fee1ce",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "e821de79f2b7da1d3b310db47e290aa5",
+              "spanID": "7aa056726840cc17"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

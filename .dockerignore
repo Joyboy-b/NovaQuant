@@ -1,0 +1,8 @@
+.git
+.venv
+frontend
+data
+artifacts
+build-engine
+**/__pycache__
+.env

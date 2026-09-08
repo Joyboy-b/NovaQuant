@@ -1,0 +1,897 @@
+{
+  "timestamp_utc": "20260908T203021319719Z",
+  "pairs": 20,
+  "payload": {
+    "engine": "cpp",
+    "data_source": "gbm",
+    "steps": 20000,
+    "seed": 42
+  },
+  "warmups_per_variant": 2,
+  "method": "Alternating sequential requests; one outstanding request; same Docker image code/kernel, local shared PostgreSQL, both traced; Jaeger queries after timing.",
+  "scope": "Before/after C++ adapters, not Python versus C++. Spans include tracing overhead; child durations overlap parent durations.",
+  "output_sha256": "0460fa941da72aae4514a966f5211b5afdd00b6f6f475e3e84b77168ab9d1311",
+  "summary": {
+    "client_ms": {
+      "median_ms": {
+        "before": 1192.5303499992879,
+        "after": 1454.5651999997062
+      },
+      "reduction_pct": -21.973013097786144,
+      "range_ms": {
+        "before": [
+          699.3895999985398,
+          1708.7304999986372
+        ],
+        "after": [
+          1141.6351000007126,
+          1880.706599997211
+        ]
+      }
+    },
+    "POST /backtest/run": {
+      "median_ms": {
+        "before": 1174.9045,
+        "after": 1432.599
+      },
+      "reduction_pct": -21.93322946673537,
+      "range_ms": {
+        "before": [
+          671.298,
+          1685.338
+        ],
+        "after": [
+          1119.651,
+          1870.598
+        ]
+      }
+    },
+    "backtest.data": {
+      "median_ms": {
+        "before": 25.234,
+        "after": 26.3435
+      },
+      "reduction_pct": -4.396845525877779,
+      "range_ms": {
+        "before": [
+          22.931,
+          66.014
+        ],
+        "after": [
+          22.817,
+          58.636
+        ]
+      }
+    },
+    "backtest.engine": {
+      "median_ms": {
+        "before": 11.879999999999999,
+        "after": 6.257
+      },
+      "reduction_pct": 47.33164983164983,
+      "range_ms": {
+        "before": [
+          10.512,
+          48.427
+        ],
+        "after": [
+          5.276,
+          44.821
+        ]
+      }
+    },
+    "backtest.metrics": {
+      "median_ms": {
+        "before": 17.8955,
+        "after": 18.435499999999998
+      },
+      "reduction_pct": -3.017518370540073,
+      "range_ms": {
+        "before": [
+          16.245,
+          23.093
+        ],
+        "after": [
+          16.347,
+          33.112
+        ]
+      }
+    },
+    "backtest.bootstrap": {
+      "median_ms": {
+        "before": 269.101,
+        "after": 346.13800000000003
+      },
+      "reduction_pct": -28.627541332064933,
+      "range_ms": {
+        "before": [
+          119.817,
+          352.913
+        ],
+        "after": [
+          264.462,
+          487.642
+        ]
+      }
+    },
+    "backtest.permutation": {
+      "median_ms": {
+        "before": 656.683,
+        "after": 861.0075
+      },
+      "reduction_pct": -31.114632174123603,
+      "range_ms": {
+        "before": [
+          299.143,
+          1047.105
+        ],
+        "after": [
+          637.374,
+          1172.126
+        ]
+      }
+    },
+    "research.persist": {
+      "median_ms": {
+        "before": 168.9395,
+        "after": 163.28300000000002
+      },
+      "reduction_pct": 3.3482400504322496,
+      "range_ms": {
+        "before": [
+          138.802,
+          220.889
+        ],
+        "after": [
+          135.245,
+          241.135
+        ]
+      }
+    },
+    "research.transaction": {
+      "median_ms": {
+        "before": 85.864,
+        "after": 81.792
+      },
+      "reduction_pct": 4.742383303829312,
+      "range_ms": {
+        "before": [
+          77.31,
+          145.395
+        ],
+        "after": [
+          77.723,
+          145.652
+        ]
+      }
+    }
+  },
+  "requests": [
+    {
+      "variant": "before",
+      "pair": 0,
+      "trace_id": "f1045e3e4250dd9565f875719e40ba50",
+      "run_id": "5e8b2b7c-ca08-4251-9d17-e2cf09d5729a",
+      "engine_version": "621f82971a9b7720b97dc4002208e80b5284620000d0203769f001c5b4e536c1",
+      "client_ms": 1156.3394000004337,
+      "span_ms": {
+        "backtest.data": 24.725,
+        "backtest.engine": 11.46,
+        "backtest.metrics": 19.021,
+        "backtest.bootstrap": 264.724,
+        "backtest.permutation": 651.73,
+        "research.transaction": 85.29,
+        "research.persist": 144.68,
+        "POST /backtest/run": 1139.572
+      }
+    },
+    {
+      "variant": "after",
+      "pair": 0,
+      "trace_id": "bec31401d3adc46637706572cad82e3d",
+      "run_id": "3afc7cde-ce0a-4fb5-998f-2fcc9393f32d",
+      "engine_version": "108c2652dcea7cef6d441a41a96385e93472b700072e48d60670fa14ab4b04b4",
+      "client_ms": 1141.6351000007126,
+      "span_ms": {
+        "backtest.data": 24.004,
+        "backtest.engine": 5.611,
+        "backtest.metrics": 17.05,
+        "backtest.bootstrap": 264.462,
+        "backtest.permutation": 637.374,
+        "research.transaction": 85.506,
+        "research.persist": 149.365,
+        "POST /backtest/run": 1119.651
+      }
+    },
+    {
+      "variant": "after",
+      "pair": 1,
+      "trace_id": "a8ff439b31caefd5852a491269fce73e",
+      "run_id": "b4466838-c8b9-4551-b264-00445218d67d",
+      "engine_version": "108c2652dcea7cef6d441a41a96385e93472b700072e48d60670fa14ab4b04b4",
+      "client_ms": 1389.5415000006324,
+      "span_ms": {
+        "backtest.data": 23.565,
+        "backtest.engine": 44.821,
+        "backtest.metrics": 18.017,
+        "backtest.bootstrap": 313.065,
+        "backtest.permutation": 793.946,
+        "research.transaction": 108.802,
+        "research.persist": 166.675,
+        "POST /backtest/run": 1382.838
+      }
+    },
+    {
+      "variant": "before",
+      "pair": 1,
+      "trace_id": "70baae5ddf5d15e815a30e4ef1decbb8",
+      "run_id": "d3b43ff0-8573-49d7-b812-12661b9fa3a4",
+      "engine_version": "621f82971a9b7720b97dc4002208e80b5284620000d0203769f001c5b4e536c1",
+      "client_ms": 1203.9906999998493,
+      "span_ms": {
+        "backtest.data": 23.818,
+        "backtest.engine": 48.427,
+        "backtest.metrics": 16.796,
+        "backtest.bootstrap": 248.944,
+        "backtest.permutation": 666.68,
+        "research.transaction": 86.438,
+        "research.persist": 149.195,
+        "POST /backtest/run": 1177.585
+      }
+    },
+    {
+      "variant": "before",
+      "pair": 2,
+      "trace_id": "663ce54f7d4d7c939d3b2cc29bd32ed3",
+      "run_id": "9e35e2f8-ee08-444c-ace4-478134b45e36",
+      "engine_version": "621f82971a9b7720b97dc4002208e80b5284620000d0203769f001c5b4e536c1",
+      "client_ms": 1234.437599996454,
+      "span_ms": {
+        "backtest.data": 29.425,
+        "backtest.engine": 15.516,
+        "backtest.metrics": 23.093,
+        "backtest.bootstrap": 286.928,
+        "backtest.permutation": 644.385,
+        "research.transaction": 145.395,
+        "research.persist": 204.895,
+        "POST /backtest/run": 1226.184
+      }
+    },
+    {
+      "variant": "after",
+      "pair": 2,
+      "trace_id": "d134f31150744b8606c230e3b5aeff3a",
+      "run_id": "b3c5d48d-3506-429f-96af-43c332f064a0",
+      "engine_version": "108c2652dcea7cef6d441a41a96385e93472b700072e48d60670fa14ab4b04b4",
+      "client_ms": 1453.7574999994831,
+      "span_ms": {
+        "backtest.data": 25.171,
+        "backtest.engine": 5.986,
+        "backtest.metrics": 18.72,
+        "backtest.bootstrap": 346.604,
+        "backtest.permutation": 852.123,
+        "research.transaction": 97.823,
+        "research.persist": 159.891,
+        "POST /backtest/run": 1432.848
+      }
+    },
+    {
+      "variant": "after",
+      "pair": 3,
+      "trace_id": "8e944a0563dccb8b22134e1d6d0c17a0",
+      "run_id": "66d509d3-fd90-4a4d-8f74-6ca271f3d86f",
+      "engine_version": "108c2652dcea7cef6d441a41a96385e93472b700072e48d60670fa14ab4b04b4",
+      "client_ms": 1583.8593000007677,
+      "span_ms": {
+        "backtest.data": 26.718,
+        "backtest.engine": 6.046,
+        "backtest.metrics": 17.745,
+        "backtest.bootstrap": 336.181,
+        "backtest.permutation": 904.247,
+        "research.transaction": 145.652,
+        "research.persist": 241.135,
+        "POST /backtest/run": 1559.376
+      }
+    },
+    {
+      "variant": "before",
+      "pair": 3,
+      "trace_id": "bd7af20be16468d50d19da11af3198c2",
+      "run_id": "73457ffb-228d-45a9-99ff-5dd5714c2799",
+      "engine_version": "621f82971a9b7720b97dc4002208e80b5284620000d0203769f001c5b4e536c1",
+      "client_ms": 1213.6061999990488,
+      "span_ms": {
+        "backtest.data": 26.905,
+        "backtest.engine": 11.599,
+        "backtest.metrics": 18.327,
+        "backtest.bootstrap": 262.064,
+        "backtest.permutation": 658.773,
+        "research.transaction": 92.572,
+        "research.persist": 204.048,
+        "POST /backtest/run": 1206.754
+      }
+    },
+    {
+      "variant": "before",
+      "pair": 4,
+      "trace_id": "cc4cb506e7ac02e5e8987c22e39c23e0",
+      "run_id": "b443487a-4bd8-4fe9-8719-5ebdff0467d7",
+      "engine_version": "621f82971a9b7720b97dc4002208e80b5284620000d0203769f001c5b4e536c1",
+      "client_ms": 699.3895999985398,
+      "span_ms": {
+        "backtest.data": 24.922,
+        "backtest.engine": 11.265,
+        "backtest.metrics": 17.042,
+        "backtest.bootstrap": 119.817,
+        "backtest.permutation": 299.143,
+        "research.transaction": 112.452,
+        "research.persist": 172.259,
+        "POST /backtest/run": 671.298
+      }
+    },
+    {
+      "variant": "after",
+      "pair": 4,
+      "trace_id": "021ac33c59d39825e6f179c6f20c3e8a",
+      "run_id": "eab7f344-e163-481f-8d55-d8d6e820f4b5",
+      "engine_version": "108c2652dcea7cef6d441a41a96385e93472b700072e48d60670fa14ab4b04b4",
+      "client_ms": 1637.5602999978582,
+      "span_ms": {
+        "backtest.data": 26.868,
+        "backtest.engine": 6.421,
+        "backtest.metrics": 17.936,
+        "backtest.bootstrap": 348.125,
+        "backtest.permutation": 1013.153,
+        "research.transaction": 104.868,
+        "research.persist": 170.985,
+        "POST /backtest/run": 1608.08
+      }
+    },
+    {
+      "variant": "after",
+      "pair": 5,
+      "trace_id": "6e233407b2ec2f39c9f1c4105f333ddc",
+      "run_id": "b1350177-b746-47e2-8333-e5efa463d5f8",
+      "engine_version": "108c2652dcea7cef6d441a41a96385e93472b700072e48d60670fa14ab4b04b4",
+      "client_ms": 1593.2388000001083,
+      "span_ms": {
+        "backtest.data": 26.488,
+        "backtest.engine": 6.339,
+        "backtest.metrics": 18.298,
+        "backtest.bootstrap": 364.007,
+        "backtest.permutation": 929.325,
+        "research.transaction": 96.849,
+        "research.persist": 200.957,
+        "POST /backtest/run": 1568.138
+      }
+    },
+    {
+      "variant": "before",
+      "pair": 5,
+      "trace_id": "a210471267ad767b913e049e95261a7b",
+      "run_id": "052f07b9-1adb-4ec2-8096-665a2f2938de",
+      "engine_version": "621f82971a9b7720b97dc4002208e80b5284620000d0203769f001c5b4e536c1",
+      "client_ms": 1363.5069000010844,
+      "span_ms": {
+        "backtest.data": 27.313,
+        "backtest.engine": 14.142,
+        "backtest.metrics": 18.828,
+        "backtest.bootstrap": 307.05,
+        "backtest.permutation": 746.156,
+        "research.transaction": 91.95,
+        "research.persist": 197.344,
+        "POST /backtest/run": 1338.889
+      }
+    },
+    {
+      "variant": "before",
+      "pair": 6,
+      "trace_id": "8d2f160b19023e7bcc9b6fa9d3fd903d",
+      "run_id": "def1d64f-d9f8-43c7-8d1c-844a5bcd20da",
+      "engine_version": "621f82971a9b7720b97dc4002208e80b5284620000d0203769f001c5b4e536c1",
+      "client_ms": 1531.8036999997275,
+      "span_ms": {
+        "backtest.data": 25.541,
+        "backtest.engine": 12.192,
+        "backtest.metrics": 18.036,
+        "backtest.bootstrap": 300.903,
+        "backtest.permutation": 941.66,
+        "research.transaction": 97.084,
+        "research.persist": 166.796,
+        "POST /backtest/run": 1500.36
+      }
+    },
+    {
+      "variant": "after",
+      "pair": 6,
+      "trace_id": "e128c6b55e552821518063a4b3f80f0d",
+      "run_id": "493919d8-e05b-44eb-8b31-1892f9735a78",
+      "engine_version": "108c2652dcea7cef6d441a41a96385e93472b700072e48d60670fa14ab4b04b4",
+      "client_ms": 1880.706599997211,
+      "span_ms": {
+        "backtest.data": 32.244,
+        "backtest.engine": 7.438,
+        "backtest.metrics": 22.278,
+        "backtest.bootstrap": 406.142,
+        "backtest.permutation": 1172.126,
+        "research.transaction": 100.782,
+        "research.persist": 199.459,
+        "POST /backtest/run": 1870.598
+      }
+    },
+    {
+      "variant": "after",
+      "pair": 7,
+      "trace_id": "9428b938f059b2b65206700c8f0a6c98",
+      "run_id": "d2c9edb5-fc66-4029-919e-f67f32783b03",
+      "engine_version": "108c2652dcea7cef6d441a41a96385e93472b700072e48d60670fa14ab4b04b4",
+      "client_ms": 1721.5476000019407,
+      "span_ms": {
+        "backtest.data": 33.297,
+        "backtest.engine": 8.335,
+        "backtest.metrics": 23.601,
+        "backtest.bootstrap": 454.713,
+        "backtest.permutation": 974.617,
+        "research.transaction": 88.285,
+        "research.persist": 195.209,
+        "POST /backtest/run": 1713.736
+      }
+    },
+    {
+      "variant": "before",
+      "pair": 7,
+      "trace_id": "29c0b8b66ced206d5ed398dda345342c",
+      "run_id": "4982a72e-963d-4488-87d7-e15f38660f0a",
+      "engine_version": "621f82971a9b7720b97dc4002208e80b5284620000d0203769f001c5b4e536c1",
+      "client_ms": 1385.1221000004443,
+      "span_ms": {
+        "backtest.data": 24.927,
+        "backtest.engine": 11.439,
+        "backtest.metrics": 17.612,
+        "backtest.bootstrap": 278.661,
+        "backtest.permutation": 774.154,
+        "research.transaction": 99.455,
+        "research.persist": 220.889,
+        "POST /backtest/run": 1355.057
+      }
+    },
+    {
+      "variant": "before",
+      "pair": 8,
+      "trace_id": "feaf7ef19fd7c8811a4670a493699ce8",
+      "run_id": "878c4f93-7d52-4dd4-8e75-ba8afe91ab34",
+      "engine_version": "621f82971a9b7720b97dc4002208e80b5284620000d0203769f001c5b4e536c1",
+      "client_ms": 1708.7304999986372,
+      "span_ms": {
+        "backtest.data": 28.67,
+        "backtest.engine": 12.702,
+        "backtest.metrics": 19.516,
+        "backtest.bootstrap": 352.913,
+        "backtest.permutation": 1047.105,
+        "research.transaction": 108.469,
+        "research.persist": 188.808,
+        "POST /backtest/run": 1685.338
+      }
+    },
+    {
+      "variant": "after",
+      "pair": 8,
+      "trace_id": "d48ba8fe8a7117ae2199fdcb1fa712d6",
+      "run_id": "7f9a3389-577f-44f5-8f0d-5727d989589b",
+      "engine_version": "108c2652dcea7cef6d441a41a96385e93472b700072e48d60670fa14ab4b04b4",
+      "client_ms": 1872.1842999984801,
+      "span_ms": {
+        "backtest.data": 45.548,
+        "backtest.engine": 11.605,
+        "backtest.metrics": 33.112,
+        "backtest.bootstrap": 487.642,
+        "backtest.permutation": 1087.961,
+        "research.transaction": 83.969,
+        "research.persist": 150.274,
+        "POST /backtest/run": 1840.811
+      }
+    },
+    {
+      "variant": "after",
+      "pair": 9,
+      "trace_id": "d1fe8ba622ca4ea8fc6f1f08275e0b4e",
+      "run_id": "913460e1-813e-489c-8d42-30fc8f1ed938",
+      "engine_version": "108c2652dcea7cef6d441a41a96385e93472b700072e48d60670fa14ab4b04b4",
+      "client_ms": 1488.420199999382,
+      "span_ms": {
+        "backtest.data": 25.685,
+        "backtest.engine": 6.417,
+        "backtest.metrics": 18.908,
+        "backtest.bootstrap": 335.222,
+        "backtest.permutation": 892.477,
+        "research.transaction": 80.882,
+        "research.persist": 180.187,
+        "POST /backtest/run": 1481.601
+      }
+    },
+    {
+      "variant": "before",
+      "pair": 9,
+      "trace_id": "013225d72c4455d648108bd4a507c9c9",
+      "run_id": "42fbd46c-d228-4c87-a1e5-435d2602c721",
+      "engine_version": "621f82971a9b7720b97dc4002208e80b5284620000d0203769f001c5b4e536c1",
+      "client_ms": 1205.8465000009164,
+      "span_ms": {
+        "backtest.data": 28.839,
+        "backtest.engine": 13.962,
+        "backtest.metrics": 19.933,
+        "backtest.bootstrap": 279.668,
+        "backtest.permutation": 632.075,
+        "research.transaction": 78.762,
+        "research.persist": 179.026,
+        "POST /backtest/run": 1175.574
+      }
+    },
+    {
+      "variant": "before",
+      "pair": 10,
+      "trace_id": "b2f16102cf133d75819df767765c33e6",
+      "run_id": "70d9846c-9457-47ed-a285-d8fc2b18274a",
+      "engine_version": "621f82971a9b7720b97dc4002208e80b5284620000d0203769f001c5b4e536c1",
+      "client_ms": 1081.0664999989967,
+      "span_ms": {
+        "backtest.data": 22.931,
+        "backtest.engine": 10.512,
+        "backtest.metrics": 16.352,
+        "backtest.bootstrap": 252.392,
+        "backtest.permutation": 588.805,
+        "research.transaction": 83.147,
+        "research.persist": 143.346,
+        "POST /backtest/run": 1057.45
+      }
+    },
+    {
+      "variant": "after",
+      "pair": 10,
+      "trace_id": "3d7572667c284631aefc0a6b19cff39d",
+      "run_id": "802dcf62-bcac-427a-ac7e-db97049c7267",
+      "engine_version": "108c2652dcea7cef6d441a41a96385e93472b700072e48d60670fa14ab4b04b4",
+      "client_ms": 1369.561600000452,
+      "span_ms": {
+        "backtest.data": 24.413,
+        "backtest.engine": 6.003,
+        "backtest.metrics": 17.297,
+        "backtest.bootstrap": 345.672,
+        "backtest.permutation": 794.495,
+        "research.transaction": 81.838,
+        "research.persist": 142.272,
+        "POST /backtest/run": 1353.245
+      }
+    },
+    {
+      "variant": "after",
+      "pair": 11,
+      "trace_id": "3a99759a2ffb8027cfc89331c68f78df",
+      "run_id": "1caedc1f-355b-455e-bcf3-a8b34e60bf0a",
+      "engine_version": "108c2652dcea7cef6d441a41a96385e93472b700072e48d60670fa14ab4b04b4",
+      "client_ms": 1458.0614999977115,
+      "span_ms": {
+        "backtest.data": 26.217,
+        "backtest.engine": 6.175,
+        "backtest.metrics": 19.066,
+        "backtest.bootstrap": 391.868,
+        "backtest.permutation": 794.598,
+        "research.transaction": 77.723,
+        "research.persist": 173.223,
+        "POST /backtest/run": 1436.665
+      }
+    },
+    {
+      "variant": "before",
+      "pair": 11,
+      "trace_id": "1a8c5e5458573b15d9de147f85750fd9",
+      "run_id": "3a8ea3cf-9ec7-488e-8b02-200e71f96ad6",
+      "engine_version": "621f82971a9b7720b97dc4002208e80b5284620000d0203769f001c5b4e536c1",
+      "client_ms": 1163.6713999978383,
+      "span_ms": {
+        "backtest.data": 24.197,
+        "backtest.engine": 10.819,
+        "backtest.metrics": 16.65,
+        "backtest.bootstrap": 278.799,
+        "backtest.permutation": 609.578,
+        "research.transaction": 80.592,
+        "research.persist": 171.083,
+        "POST /backtest/run": 1136.598
+      }
+    },
+    {
+      "variant": "before",
+      "pair": 12,
+      "trace_id": "55f5c953145c4b02ee9e56329bca40ba",
+      "run_id": "144422f9-1b7e-4335-a008-c366b97a5225",
+      "engine_version": "621f82971a9b7720b97dc4002208e80b5284620000d0203769f001c5b4e536c1",
+      "client_ms": 1167.7745999986655,
+      "span_ms": {
+        "backtest.data": 29.043,
+        "backtest.engine": 13.357,
+        "backtest.metrics": 19.366,
+        "backtest.bootstrap": 270.769,
+        "backtest.permutation": 636.02,
+        "research.transaction": 85.234,
+        "research.persist": 145.252,
+        "POST /backtest/run": 1141.629
+      }
+    },
+    {
+      "variant": "after",
+      "pair": 12,
+      "trace_id": "ef8410b02041ad2b15832019c50e1821",
+      "run_id": "d991669c-7593-4674-b9b8-7e393133dac0",
+      "engine_version": "108c2652dcea7cef6d441a41a96385e93472b700072e48d60670fa14ab4b04b4",
+      "client_ms": 1351.5434000000823,
+      "span_ms": {
+        "backtest.data": 29.837,
+        "backtest.engine": 6.709,
+        "backtest.metrics": 18.693,
+        "backtest.bootstrap": 321.876,
+        "backtest.permutation": 799.247,
+        "research.transaction": 81.746,
+        "research.persist": 140.443,
+        "POST /backtest/run": 1343.846
+      }
+    },
+    {
+      "variant": "after",
+      "pair": 13,
+      "trace_id": "79d6051da7f62a5328d235404403703e",
+      "run_id": "bd118a7d-2c1c-4e03-a17f-5563afea6fef",
+      "engine_version": "108c2652dcea7cef6d441a41a96385e93472b700072e48d60670fa14ab4b04b4",
+      "client_ms": 1531.2517000020307,
+      "span_ms": {
+        "backtest.data": 27.417,
+        "backtest.engine": 6.746,
+        "backtest.metrics": 18.969,
+        "backtest.bootstrap": 389.297,
+        "backtest.permutation": 885.421,
+        "research.transaction": 79.742,
+        "research.persist": 175.737,
+        "POST /backtest/run": 1524.815
+      }
+    },
+    {
+      "variant": "before",
+      "pair": 13,
+      "trace_id": "53a9b0091b3d8bfa50bb52bb56cbeae6",
+      "run_id": "4fd3c68c-172b-45f9-8854-00f16b3ce524",
+      "engine_version": "621f82971a9b7720b97dc4002208e80b5284620000d0203769f001c5b4e536c1",
+      "client_ms": 1119.95079999906,
+      "span_ms": {
+        "backtest.data": 24.422,
+        "backtest.engine": 11.212,
+        "backtest.metrics": 17.388,
+        "backtest.bootstrap": 257.616,
+        "backtest.permutation": 603.809,
+        "research.transaction": 77.31,
+        "research.persist": 176.311,
+        "POST /backtest/run": 1113.868
+      }
+    },
+    {
+      "variant": "before",
+      "pair": 14,
+      "trace_id": "e421c9337eb6ec7abf41cfede4c3654d",
+      "run_id": "5dc61e22-c09b-463d-8b4e-23e09c14035f",
+      "engine_version": "621f82971a9b7720b97dc4002208e80b5284620000d0203769f001c5b4e536c1",
+      "client_ms": 1141.7110999973374,
+      "span_ms": {
+        "backtest.data": 23.889,
+        "backtest.engine": 12.467,
+        "backtest.metrics": 17.755,
+        "backtest.bootstrap": 287.301,
+        "backtest.permutation": 608.969,
+        "research.transaction": 85.028,
+        "research.persist": 146.757,
+        "POST /backtest/run": 1123.703
+      }
+    },
+    {
+      "variant": "after",
+      "pair": 14,
+      "trace_id": "61516e411a9661174a4099dcef718745",
+      "run_id": "d11481f4-29f1-4a23-bb75-d35ddf047cad",
+      "engine_version": "108c2652dcea7cef6d441a41a96385e93472b700072e48d60670fa14ab4b04b4",
+      "client_ms": 1313.801099997363,
+      "span_ms": {
+        "backtest.data": 26.47,
+        "backtest.engine": 6.064,
+        "backtest.metrics": 18.037,
+        "backtest.bootstrap": 334.267,
+        "backtest.permutation": 765.08,
+        "research.transaction": 77.736,
+        "research.persist": 135.245,
+        "POST /backtest/run": 1307.474
+      }
+    },
+    {
+      "variant": "after",
+      "pair": 15,
+      "trace_id": "281bf08666182b614c3f802be1d46b9f",
+      "run_id": "f77ca8eb-7bb3-4d1b-b340-3a3205f7569c",
+      "engine_version": "108c2652dcea7cef6d441a41a96385e93472b700072e48d60670fa14ab4b04b4",
+      "client_ms": 1369.3636000025435,
+      "span_ms": {
+        "backtest.data": 22.817,
+        "backtest.engine": 5.276,
+        "backtest.metrics": 16.587,
+        "backtest.bootstrap": 323.393,
+        "backtest.permutation": 783.462,
+        "research.transaction": 78.48,
+        "research.persist": 172.464,
+        "POST /backtest/run": 1346.279
+      }
+    },
+    {
+      "variant": "before",
+      "pair": 15,
+      "trace_id": "87d95c745db974a04cd577985086be7a",
+      "run_id": "f0ccd911-2553-47b9-919f-98871c1def3b",
+      "engine_version": "621f82971a9b7720b97dc4002208e80b5284620000d0203769f001c5b4e536c1",
+      "client_ms": 1166.6116999986116,
+      "span_ms": {
+        "backtest.data": 25.6,
+        "backtest.engine": 12.036,
+        "backtest.metrics": 18.374,
+        "backtest.bootstrap": 252.528,
+        "backtest.permutation": 654.593,
+        "research.transaction": 81.658,
+        "research.persist": 175.346,
+        "POST /backtest/run": 1160.24
+      }
+    },
+    {
+      "variant": "before",
+      "pair": 16,
+      "trace_id": "0a72747445d4593857ad1f5ed6ca7b7e",
+      "run_id": "488888d3-d0bf-4909-a290-97139bd27d8f",
+      "engine_version": "621f82971a9b7720b97dc4002208e80b5284620000d0203769f001c5b4e536c1",
+      "client_ms": 1243.246400001226,
+      "span_ms": {
+        "backtest.data": 23.957,
+        "backtest.engine": 10.898,
+        "backtest.metrics": 17.672,
+        "backtest.bootstrap": 267.433,
+        "backtest.permutation": 707.582,
+        "research.transaction": 97.035,
+        "research.persist": 158.887,
+        "POST /backtest/run": 1219.091
+      }
+    },
+    {
+      "variant": "after",
+      "pair": 16,
+      "trace_id": "f71941e8f54c4662ba7b526256262623",
+      "run_id": "2859af30-8a15-492b-90f8-d101644e7fa7",
+      "engine_version": "108c2652dcea7cef6d441a41a96385e93472b700072e48d60670fa14ab4b04b4",
+      "client_ms": 1455.3728999999294,
+      "span_ms": {
+        "backtest.data": 23.43,
+        "backtest.engine": 5.603,
+        "backtest.metrics": 16.837,
+        "backtest.bootstrap": 309.352,
+        "backtest.permutation": 914.335,
+        "research.transaction": 79.685,
+        "research.persist": 139.914,
+        "POST /backtest/run": 1432.35
+      }
+    },
+    {
+      "variant": "after",
+      "pair": 17,
+      "trace_id": "60329c3ab9d755acea54df382ce4b032",
+      "run_id": "e15e553a-22c4-4d04-9281-87492dc8284c",
+      "engine_version": "108c2652dcea7cef6d441a41a96385e93472b700072e48d60670fa14ab4b04b4",
+      "client_ms": 1432.2781000009854,
+      "span_ms": {
+        "backtest.data": 25.768,
+        "backtest.engine": 6.037,
+        "backtest.metrics": 18.573,
+        "backtest.bootstrap": 348.438,
+        "backtest.permutation": 869.892,
+        "research.transaction": 78.597,
+        "research.persist": 136.042,
+        "POST /backtest/run": 1426.403
+      }
+    },
+    {
+      "variant": "before",
+      "pair": 17,
+      "trace_id": "f0aab829f1078d48d49b51467129210d",
+      "run_id": "55844a63-7923-4efe-ad8a-a3e806c1d4a3",
+      "engine_version": "621f82971a9b7720b97dc4002208e80b5284620000d0203769f001c5b4e536c1",
+      "client_ms": 1181.0699999987264,
+      "span_ms": {
+        "backtest.data": 26.678,
+        "backtest.engine": 12.85,
+        "backtest.metrics": 18.405,
+        "backtest.bootstrap": 281.006,
+        "backtest.permutation": 665.05,
+        "research.transaction": 83.654,
+        "research.persist": 144.027,
+        "POST /backtest/run": 1174.235
+      }
+    },
+    {
+      "variant": "before",
+      "pair": 18,
+      "trace_id": "e2da192267ff67f771cfa317403053f4",
+      "run_id": "d9c2ed6a-b33c-4b83-a893-b5fd883c932c",
+      "engine_version": "621f82971a9b7720b97dc4002208e80b5284620000d0203769f001c5b4e536c1",
+      "client_ms": 1236.5850999995018,
+      "span_ms": {
+        "backtest.data": 66.014,
+        "backtest.engine": 11.724,
+        "backtest.metrics": 17.53,
+        "backtest.bootstrap": 263.858,
+        "backtest.permutation": 692.798,
+        "research.transaction": 78.486,
+        "research.persist": 138.802,
+        "POST /backtest/run": 1213.759
+      }
+    },
+    {
+      "variant": "after",
+      "pair": 18,
+      "trace_id": "47d3402ad593380643f8bd24d028913c",
+      "run_id": "a3f1d73a-5e4c-4ae7-91b9-d4e79a73857e",
+      "engine_version": "108c2652dcea7cef6d441a41a96385e93472b700072e48d60670fa14ab4b04b4",
+      "client_ms": 1388.0189999981667,
+      "span_ms": {
+        "backtest.data": 58.636,
+        "backtest.engine": 5.374,
+        "backtest.metrics": 16.347,
+        "backtest.bootstrap": 317.166,
+        "backtest.permutation": 814.842,
+        "research.transaction": 81.336,
+        "research.persist": 143.44,
+        "POST /backtest/run": 1379.076
+      }
+    },
+    {
+      "variant": "after",
+      "pair": 19,
+      "trace_id": "12de40b2debcb0216e0ec379087c90f7",
+      "run_id": "7c495b98-e953-44f0-a51b-46179aada0c0",
+      "engine_version": "108c2652dcea7cef6d441a41a96385e93472b700072e48d60670fa14ab4b04b4",
+      "client_ms": 1407.9954000008001,
+      "span_ms": {
+        "backtest.data": 25.333,
+        "backtest.engine": 6.586,
+        "backtest.metrics": 18.999,
+        "backtest.bootstrap": 349.694,
+        "backtest.permutation": 840.771,
+        "research.transaction": 78.197,
+        "research.persist": 136.549,
+        "POST /backtest/run": 1401.359
+      }
+    },
+    {
+      "variant": "before",
+      "pair": 19,
+      "trace_id": "1b40a331c59aebe1014dc8fb53e77a1b",
+      "run_id": "af3b1169-0b3d-4299-bf9c-1e268123273c",
+      "engine_version": "621f82971a9b7720b97dc4002208e80b5284620000d0203769f001c5b4e536c1",
+      "client_ms": 1172.4595000014233,
+      "span_ms": {
+        "backtest.data": 24.497,
+        "backtest.engine": 10.747,
+        "backtest.metrics": 16.245,
+        "backtest.bootstrap": 244.634,
+        "backtest.permutation": 677.195,
+        "research.transaction": 86.53,
+        "research.persist": 152.241,
+        "POST /backtest/run": 1147.968
+      }
+    }
+  ],
+  "source_sha256": {
+    "scripts/trace_comparison_app.py": "8d47323532f511ce2addf31376d447d683a9c32dc4692d8c9beef6a237216a68",
+    "scripts/compare_traces.py": "fc7ce5d5adad36206504ba99d61fc2bf57eb027c6170071e649ad06fbf5d885e",
+    "backend/backtest/native.py": "2b0c223ec749572846a2f0e7b015c3829864bb5e887cc4a758207fd77ebb552a",
+    "scripts/baselines/native_before_buffers.py": "f91cea1786648ae84b3f13b595dfdd12591c3f677ab1f6b22500941f8e44495c"
+  }
+}

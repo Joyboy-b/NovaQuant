@@ -1,0 +1,10 @@
+{
+  "backend/backtest/stats.py": "5bba87da79d7e8f42c72d335ef28e89d14d0822fa2b187e7a223a3f3b8867471",
+  "scripts/baselines/stats_before_resampling.py": "8bf2018b5cdbd0effc7f989c35e7a66d836ca20024f477d8b6c0a390fca08af7",
+  "scripts/benchmark_stats.py": "7e7308a5b4499a46830dddebf79a775379237c8411798c6229dd9bf8c6652568",
+  "scripts/benchmark_stats_pyperf.py": "e2365714afa7c750ff2d232bdf41aa0bdc6ec231e967e24901df479320426f47",
+  "scripts/stats_workload.py": "df91a139538bb40e3085a1655f129fd034be5773d440f5303b47bc812177960e",
+  "scripts/compare_traces.py": "11e36373b49da61e98667f750f557a2bfd8959a30d13819198dd294a56dd9bed",
+  "scripts/stats_comparison_app.py": "a0716361d899cd49c29b054dc3185897b11e2616a93d813a2a56cf37caa48383",
+  "tests/test_stats_buffers.py": "13006d4f0b3cc92725cc541b0c9a835ff6a593635fb11bf54ca3dde0ecd40cd7"
+}

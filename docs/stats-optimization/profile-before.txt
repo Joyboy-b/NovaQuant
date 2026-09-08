@@ -1,0 +1,28 @@
+         5281 function calls in 0.905 seconds
+
+   Ordered by: cumulative time
+   List reduced from 66 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.905    0.905 /app/scripts/stats_workload.py:17(run_stats)
+        1    0.618    0.618    0.641    0.641 /app/scripts/baselines/stats_before_resampling.py:21(permutation_test_mean_gt_zero)
+        1    0.254    0.254    0.264    0.264 /app/scripts/baselines/stats_before_resampling.py:7(bootstrap_mean_ci)
+      223    0.000    0.000    0.027    0.000 {method 'mean' of 'numpy.ndarray' objects}
+      223    0.002    0.000    0.027    0.000 /usr/local/lib/python3.12/site-packages/numpy/_core/_methods.py:115(_mean)
+      675    0.025    0.000    0.025    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+      440    0.001    0.000    0.005    0.000 /usr/local/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:3287(prod)
+      440    0.001    0.000    0.004    0.000 /usr/local/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:66(_wrapreduction)
+      223    0.001    0.000    0.001    0.000 /usr/local/lib/python3.12/site-packages/numpy/_core/_methods.py:73(_count_reduce_items)
+        2    0.001    0.000    0.001    0.000 {built-in method numpy.array}
+      444    0.001    0.000    0.001    0.000 {built-in method builtins.getattr}
+      220    0.000    0.000    0.000    0.000 {built-in method builtins.min}
+        2    0.000    0.000    0.000    0.000 /usr/local/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py:4255(quantile)
+        2    0.000    0.000    0.000    0.000 /usr/local/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py:4500(_quantile_unchecked)
+      443    0.000    0.000    0.000    0.000 {built-in method builtins.isinstance}
+        2    0.000    0.000    0.000    0.000 /usr/local/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py:3815(_ureduce)
+        2    0.000    0.000    0.000    0.000 /usr/local/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py:4639(_quantile_ureduce_func)
+        2    0.000    0.000    0.000    0.000 /usr/local/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py:4714(_quantile)
+      463    0.000    0.000    0.000    0.000 {built-in method builtins.issubclass}
+      223    0.000    0.000    0.000    0.000 {built-in method numpy.lib.array_utils.normalize_axis_index}
+
+

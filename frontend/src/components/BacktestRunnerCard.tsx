@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { api } from "../api";
 import type { BacktestRequest, BacktestResponse, SweepRequest, SweepResponse, WalkForwardRequest, WalkForwardResponse } from "../types";
 
@@ -28,6 +28,23 @@ export default function BacktestRunnerCard({ onBacktest, onSweep, onWalkForward 
 
   // strategy/costs
   const [strategy, setStrategy] = useState<BacktestRequest["strategy"]>("momentum");
+  const [engine, setEngine] = useState<"python" | "cpp">("python");
+  const [savedRuns, setSavedRuns] = useState<Awaited<ReturnType<typeof api.getResearchRuns>>>([]);
+  const [savedMessage, setSavedMessage] = useState("");
+  async function refreshHistory() {
+    try { setSavedRuns(await api.getResearchRuns()); }
+    catch (e:any) { setSavedMessage(e.message); }
+  }
+  useEffect(() => { void refreshHistory(); }, []);
+  async function loadSaved(id:string) {
+    try {
+      const saved = await api.getResearchRun(id);
+      if (saved.kind === "backtest") onBacktest(saved.result as BacktestResponse);
+      else if (saved.kind === "sweep") onSweep(saved.result as SweepResponse);
+      else onWalkForward(saved.result as WalkForwardResponse);
+      setSavedMessage(`Loaded saved ${saved.kind} ${id.slice(0,8)}`);
+    } catch (e:any) { setSavedMessage(e.message); }
+  }
   const [lookback, setLookback] = useState(10);
   const [qty, setQty] = useState(1);
   const [feeBps, setFeeBps] = useState(1);
@@ -51,6 +68,7 @@ export default function BacktestRunnerCard({ onBacktest, onSweep, onWalkForward 
   const baseReq: BacktestRequest = useMemo(() => {
     const common: BacktestRequest = {
       symbol,
+      engine: strategy === "ml_momentum" ? "python" : engine,
       data_source: dataSource,
       strategy,
       lookback,
@@ -90,7 +108,7 @@ export default function BacktestRunnerCard({ onBacktest, onSweep, onWalkForward 
       sigma,
       spread_bps: spreadBps
     };
-  }, [symbol, dataSource, steps, startPrice, mu, sigma, spreadBps, volBps, yahooSymbol, start, end, interval, strategy, lookback, qty, feeBps, slipBps, seed]);
+  }, [engine, symbol, dataSource, steps, startPrice, mu, sigma, spreadBps, volBps, yahooSymbol, start, end, interval, strategy, lookback, qty, feeBps, slipBps, seed]);
 
   function parseNums(s: string) {
     return s
@@ -107,6 +125,8 @@ export default function BacktestRunnerCard({ onBacktest, onSweep, onWalkForward 
     try {
       const r = await api.runBacktest(baseReq);
       onBacktest(r);
+      setSavedMessage(`Saved run ${r.run_id?.slice(0,8)} · ${r.elapsed_ms?.toFixed(1)} ms computation`);
+      void refreshHistory();
     } catch (e: any) {
       setErr(e?.message ?? String(e));
     } finally {
@@ -118,9 +138,10 @@ export default function BacktestRunnerCard({ onBacktest, onSweep, onWalkForward 
     setErr(null);
     setBusy("walkforward");
     try {
-      const req: WalkForwardRequest = { ...baseReq, train_size: trainSize, test_size: testSize } as any;
+      const req: WalkForwardRequest = { ...baseReq, engine: "python", train_size: trainSize, test_size: testSize };
       const r = await api.runWalkForward(req);
       onWalkForward(r);
+      void refreshHistory();
     } catch (e: any) {
       setErr(e?.message ?? String(e));
     } finally {
@@ -142,6 +163,7 @@ export default function BacktestRunnerCard({ onBacktest, onSweep, onWalkForward 
       };
       const r = await api.runSweep(req);
       onSweep(r);
+      void refreshHistory();
     } catch (e: any) {
       setErr(e?.message ?? String(e));
     } finally {
@@ -339,6 +361,25 @@ export default function BacktestRunnerCard({ onBacktest, onSweep, onWalkForward 
           </div>
         </div>
       </div>
+
+      <section style={{ marginTop: 16 }}>
+        <label>Backtest engine{' '}
+          <select aria-label="Backtest engine" value={engine} disabled={strategy === "ml_momentum"}
+            onChange={e => setEngine(e.target.value as "python" | "cpp")}>
+            <option value="python">Python</option><option value="cpp">C++ momentum</option>
+          </select>
+        </label>
+        <p style={{fontSize:12}}>ML and walk-forward use Python. Completed research is saved automatically.</p>
+        <h3>Saved research</h3>
+        <button onClick={refreshHistory}>Refresh saved runs</button>
+        <p role="status">{savedMessage}</p>
+        {savedRuns.length === 0 && <p>No saved runs yet.</p>}
+        <ul style={{maxHeight:180,overflowY:"auto"}}>
+          {savedRuns.map(run => <li key={run.id}><button onClick={() => loadSaved(run.id)}>
+            {run.kind} · {run.config.symbol} · {run.id.slice(0,8)} · {new Date(run.created_at).toLocaleString()}
+          </button></li>)}
+        </ul>
+      </section>
 
       {err && (
         <div style={{ marginTop: 12, color: "crimson", whiteSpace: "pre-wrap" }}>

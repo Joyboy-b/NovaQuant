@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 from typing import Callable, Optional
 
 import websockets
@@ -38,4 +39,5 @@ async def run_bookticker_loop(
         except asyncio.CancelledError:
             raise
         except Exception:
+            logging.getLogger(__name__).exception('Market stream disconnected or tick callback failed')
             await asyncio.sleep(reconnect_delay_sec)

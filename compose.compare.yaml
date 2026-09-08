@@ -1,0 +1,30 @@
+x-comparison: &comparison
+  build: .
+  command: ["uvicorn", "scripts.trace_comparison_app:app", "--host", "0.0.0.0", "--port", "8001"]
+  depends_on:
+    db:
+      condition: service_healthy
+    jaeger:
+      condition: service_started
+
+x-environment: &environment
+  DATABASE_URL: postgresql://novaquant:novaquant@db:5432/novaquant
+  MARKET_STREAM_ENABLED: "false"
+  NOVAQUANT_TELEMETRY_ENABLED: "true"
+  OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://jaeger:4318/v1/traces
+
+services:
+  before-api:
+    <<: *comparison
+    ports: ["127.0.0.1:8002:8001"]
+    environment:
+      <<: *environment
+      NOVAQUANT_COMPARISON_ADAPTER: before
+      OTEL_SERVICE_NAME: novaquant-before
+  after-api:
+    <<: *comparison
+    ports: ["127.0.0.1:8003:8001"]
+    environment:
+      <<: *environment
+      NOVAQUANT_COMPARISON_ADAPTER: after
+      OTEL_SERVICE_NAME: novaquant-after

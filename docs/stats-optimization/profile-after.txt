@@ -1,0 +1,28 @@
+         21341 function calls in 0.426 seconds
+
+   Ordered by: cumulative time
+   List reduced from 74 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.426    0.426 /app/scripts/stats_workload.py:17(run_stats)
+        1    0.225    0.225    0.314    0.314 /app/backend/backtest/stats.py:30(permutation_test_mean_gt_zero)
+        1    0.078    0.078    0.112    0.112 /app/backend/backtest/stats.py:7(bootstrap_mean_ci)
+      875    0.001    0.000    0.082    0.000 /usr/local/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:106(take)
+      875    0.001    0.000    0.081    0.000 /usr/local/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:48(_wrapfunc)
+      875    0.080    0.000    0.080    0.000 {method 'take' of 'numpy.ndarray' objects}
+      877    0.001    0.000    0.032    0.000 {method 'mean' of 'numpy.ndarray' objects}
+      877    0.004    0.000    0.032    0.000 /usr/local/lib/python3.12/site-packages/numpy/_core/_methods.py:115(_mean)
+     1764    0.027    0.000    0.027    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+      875    0.001    0.000    0.006    0.000 /usr/local/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:3287(prod)
+      875    0.002    0.000    0.005    0.000 /usr/local/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:66(_wrapreduction)
+      877    0.002    0.000    0.002    0.000 /usr/local/lib/python3.12/site-packages/numpy/_core/_methods.py:73(_count_reduce_items)
+     1754    0.001    0.000    0.001    0.000 {built-in method builtins.getattr}
+        3    0.001    0.000    0.001    0.000 {built-in method numpy.array}
+      877    0.000    0.000    0.000    0.000 {built-in method builtins.min}
+      625    0.000    0.000    0.000    0.000 /usr/local/lib/python3.12/site-packages/numpy/_core/numeric.py:483(count_nonzero)
+     1752    0.000    0.000    0.000    0.000 {built-in method builtins.isinstance}
+     1772    0.000    0.000    0.000    0.000 {built-in method builtins.issubclass}
+        2    0.000    0.000    0.000    0.000 /usr/local/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py:4255(quantile)
+      625    0.000    0.000    0.000    0.000 {built-in method numpy._core._multiarray_umath.count_nonzero}
+
+
