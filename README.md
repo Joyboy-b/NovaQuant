@@ -46,7 +46,7 @@ It is designed to be:
 │  • Order FILL            │
 │  • Execution Stub        │
 │                          │
-│  (Replaceable later)     │
+│       │
 └──────────────────────────┘
 ```
 
